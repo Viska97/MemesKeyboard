@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorKeyboard">
+    android:background="@color/colorKeyboard"
+    android:orientation="vertical">
 
     <FrameLayout
         android:id="@+id/keyboardroot"
@@ -16,11 +16,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:cornerRadius="4dp"
-            app:strokeWidth="1dp"
-            app:backgroundTint="@color/colorAccent"
             android:text="@string/vklogin"
-            />
+            android:visibility="visible"
+            app:backgroundTint="@color/colorAccent"
+            app:cornerRadius="4dp"
+            app:strokeWidth="1dp" />
 
     </FrameLayout>
 
