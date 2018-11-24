@@ -18,36 +18,37 @@ class VKStickersKeyboard : Application() {
             private set
     }
 
-    private lateinit var tokenStatus : MutableLiveData<String>
+    private lateinit var loginStatus : MutableLiveData<Boolean>
 
     private val vkAccessTokenTracker = object : VKAccessTokenTracker(){
         override fun onVKAccessTokenChanged(oldToken: VKAccessToken?, newToken: VKAccessToken?) {
+            Log.e("vasily","changed")
             if(newToken == null){
                 defaultSharedPreferences.edit {
                     putString(TOKEN, null)
                 }
-                tokenStatus.postValue(null)
+                loginStatus.postValue(false)
             }
             else{
                 defaultSharedPreferences.edit {
                     putString(TOKEN, newToken.accessToken)
                 }
-                tokenStatus.postValue(newToken.accessToken)
             }
         }
     }
 
     override fun onCreate() {
-        tokenStatus = MutableLiveData()
-        tokenStatus.postValue(defaultSharedPreferences.getString(TOKEN,null))
         vkAccessTokenTracker.startTracking()
         VKSdk.initialize(applicationContext)
         super.onCreate()
         instance = this
-        Log.e("vasily",VKSdk.getAccessToken().accessToken)
     }
 
-    fun getTokenStatus() : LiveData<String>{
-        return tokenStatus
+    fun getLoginStatus() : LiveData<Boolean>{
+        if(!this::loginStatus.isInitialized){
+            loginStatus = MutableLiveData()
+            loginStatus.postValue(VKSdk.isLoggedIn())
+        }
+        return loginStatus
     }
 }
