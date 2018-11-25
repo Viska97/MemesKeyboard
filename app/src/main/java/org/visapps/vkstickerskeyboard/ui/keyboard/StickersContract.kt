@@ -9,6 +9,6 @@ class StickersContract {
     }
 
     interface Presenter: BaseContract.Presenter<StickersContract.View> {
-
+        fun loadChats()
     }
 }

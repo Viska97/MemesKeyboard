@@ -3,12 +3,10 @@ package org.visapps.vkstickerskeyboard.ui.keyboard
 import android.inputmethodservice.InputMethodService
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.lifecycle.*
 import kotlinx.android.synthetic.main.keyboard_main.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
 import org.visapps.vkstickerskeyboard.R
-import org.visapps.vkstickerskeyboard.keyboard.KeyboardViewModel
 import org.visapps.vkstickerskeyboard.ui.AuthActivity
 
 class StickersKeyboardService : InputMethodService(), StickersContract.View {
@@ -33,6 +31,10 @@ class StickersKeyboardService : InputMethodService(), StickersContract.View {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+    }
+
+    override fun onFinishInput() {
+        super.onFinishInput()
     }
 
     override fun updateLoginStatus(loggedIn: Boolean) {
