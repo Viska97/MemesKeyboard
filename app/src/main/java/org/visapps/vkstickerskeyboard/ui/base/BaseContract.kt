@@ -3,8 +3,7 @@ package org.visapps.vkstickerskeyboard.ui.base
 interface BaseContract {
 
     interface Presenter<in T> {
-        fun subscribe()
-        fun unsubscribe()
+        fun detachView()
         fun attach(view: T)
     }
 

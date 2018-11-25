@@ -11,10 +11,10 @@ import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.keyboard.KeyboardViewModel
 import org.visapps.vkstickerskeyboard.ui.AuthActivity
 
-class StickersKeyboardService : InputMethodService() {
+class StickersKeyboardService : InputMethodService(), StickersContract.View {
 
     private lateinit var view : View
-    private lateinit var viewModel : KeyboardViewModel
+    private lateinit var presenter: StickersPresenter
 
     override fun onCreate() {
         setTheme(R.style.AppTheme)
@@ -26,10 +26,21 @@ class StickersKeyboardService : InputMethodService() {
         view.loginbutton.setOnClickListener {
             startActivity(intentFor<AuthActivity>().newTask())
         }
+        presenter = StickersPresenter()
+        presenter.attach(this)
         return view
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+    }
+
+    override fun updateLoginStatus(loggedIn: Boolean) {
+        if(loggedIn){
+            view.loginbutton.visibility = View.GONE
+        }
+        else{
+            view.loginbutton.visibility = View.VISIBLE
+        }
     }
 }

@@ -5,7 +5,7 @@ import org.visapps.vkstickerskeyboard.ui.base.BaseContract
 class StickersContract {
 
     interface View: BaseContract.View {
-        fun updateLoginStatus(boolean: Boolean)
+        fun updateLoginStatus(loggedIn: Boolean)
     }
 
     interface Presenter: BaseContract.Presenter<StickersContract.View> {

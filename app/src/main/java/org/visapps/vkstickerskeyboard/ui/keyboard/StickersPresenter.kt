@@ -1,16 +1,36 @@
 package org.visapps.vkstickerskeyboard.ui.keyboard
 
+import android.util.Log
+import androidx.core.content.edit
+import com.vk.sdk.VKAccessToken
+import com.vk.sdk.VKAccessTokenTracker
+import com.vk.sdk.VKSdk
+import org.jetbrains.anko.defaultSharedPreferences
+import org.visapps.vkstickerskeyboard.VKStickersKeyboard
+
 class StickersPresenter : StickersContract.Presenter {
 
-    override fun subscribe() {
+    private var view : StickersContract.View? = null
 
+    private val vkAccessTokenTracker = object : VKAccessTokenTracker(){
+        override fun onVKAccessTokenChanged(oldToken: VKAccessToken?, newToken: VKAccessToken?) {
+            Log.e("vasily", "changed")
+            if(newToken == null){
+                view?.updateLoginStatus(false)
+            }
+            else{
+                view?.updateLoginStatus(true)
+            }
+        }
     }
 
-    override fun unsubscribe() {
-
+    override fun detachView() {
+        view = null
     }
 
     override fun attach(view: StickersContract.View) {
-
+        this.view = view
+        //vkAccessTokenTracker.startTracking()
+        view.updateLoginStatus(VKSdk.isLoggedIn())
     }
 }
