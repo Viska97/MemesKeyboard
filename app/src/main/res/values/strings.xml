@@ -7,6 +7,7 @@
     <string name="title_activity_auth">Authentication</string>
     <string name="retrylogin">Retry login</string>
     <string name="loginfailed">Login with VK account failed</string>
+    <string name="vkdialogs">VK Dialogs</string>
 
 
     <integer name="com_vk_sdk_AppId">6761956</integer>

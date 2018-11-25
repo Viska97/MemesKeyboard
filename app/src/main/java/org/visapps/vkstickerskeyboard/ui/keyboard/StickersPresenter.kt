@@ -8,6 +8,7 @@ import com.vk.sdk.VKSdk
 import kotlinx.coroutines.*
 import org.jetbrains.anko.defaultSharedPreferences
 import org.visapps.vkstickerskeyboard.VKStickersKeyboard
+import org.visapps.vkstickerskeyboard.data.response.Result
 import org.visapps.vkstickerskeyboard.data.vk.VKRepository
 
 class StickersPresenter : StickersContract.Presenter {
@@ -27,6 +28,16 @@ class StickersPresenter : StickersContract.Presenter {
         }
     }
 
+    override fun onStart() {
+        if(VKSdk.isLoggedIn()){
+            loadChats()
+        }
+    }
+
+    override fun onStop() {
+        chatsJob?.cancel()
+    }
+
     override fun detachView() {
         view = null
     }
@@ -38,8 +49,15 @@ class StickersPresenter : StickersContract.Presenter {
     }
 
     override fun loadChats() {
-        chatsJob = CoroutineScope(Dispatchers.IO).launch {
+        chatsJob = CoroutineScope(Dispatchers.Main).launch {
+            view?.clearChats()
+            view?.updateLoadingState(true)
             val result = VKRepository.get().getChats()
+            view?.updateLoadingState(false)
+            when(result){
+                is Result.Success -> view?.updateChats(result.data!!)
+                is Result.Error -> view?.showError(result.exception.message!!)
+            }
         }
     }
 }
