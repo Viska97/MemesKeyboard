@@ -16,6 +16,7 @@ import org.visapps.vkstickerskeyboard.ui.AuthActivity
 class StickersKeyboardService : InputMethodService() {
 
     private lateinit var view : View
+    private lateinit var viewModel : KeyboardViewModel
 
     override fun onCreate() {
         setTheme(R.style.AppTheme)
@@ -31,14 +32,7 @@ class StickersKeyboardService : InputMethodService() {
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
-        VKSdk.wakeUpSession(this)
-        Log.e("vasily", "here")
-        if(VKSdk.isLoggedIn()){
-            view.loginbutton.visibility = View.GONE
-        }
-        else {
-            view.loginbutton.visibility = View.VISIBLE
-        }
+        viewModel = ViewModelProviders.of(this).
         super.onStartInputView(info, restarting)
     }
 }
