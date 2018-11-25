@@ -1,16 +1,14 @@
-package org.visapps.vkstickerskeyboard.keyboard
+package org.visapps.vkstickerskeyboard.ui.keyboard
 
 import android.inputmethodservice.InputMethodService
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.lifecycle.*
-import com.vk.sdk.VKSdk
 import kotlinx.android.synthetic.main.keyboard_main.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
 import org.visapps.vkstickerskeyboard.R
-import org.visapps.vkstickerskeyboard.VKStickersKeyboard
+import org.visapps.vkstickerskeyboard.keyboard.KeyboardViewModel
 import org.visapps.vkstickerskeyboard.ui.AuthActivity
 
 class StickersKeyboardService : InputMethodService() {
@@ -32,7 +30,6 @@ class StickersKeyboardService : InputMethodService() {
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
-        viewModel = ViewModelProviders.of(this).
         super.onStartInputView(info, restarting)
     }
 }

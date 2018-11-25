@@ -1,4 +1,11 @@
 package org.visapps.vkstickerskeyboard.keyboard
 
-class StickersKeyboardView {
+import android.content.Context
+import android.view.View
+
+class StickersKeyboardView(context : Context) : View(context) {
+
+     fun test(){
+         val view : View
+     }
 }
