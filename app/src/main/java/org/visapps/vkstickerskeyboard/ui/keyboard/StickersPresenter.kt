@@ -29,6 +29,7 @@ class StickersPresenter : StickersContract.Presenter {
     }
 
     override fun onStart() {
+        view?.updateLoginStatus(VKSdk.isLoggedIn())
         if(VKSdk.isLoggedIn()){
             loadChats()
         }
@@ -45,7 +46,6 @@ class StickersPresenter : StickersContract.Presenter {
     override fun attach(view: StickersContract.View) {
         this.view = view
         //vkAccessTokenTracker.startTracking()
-        view.updateLoginStatus(VKSdk.isLoggedIn())
     }
 
     override fun loadChats() {

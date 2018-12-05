@@ -64,9 +64,7 @@ class StickersKeyboardService : InputMethodService(), StickersContract.View {
     }
 
     override fun updateChats(chats: ConversationsResponse) {
-        //Toast.makeText(this,chats.response?.profiles?.count().toString(),Toast.LENGTH_SHORT).show()
         val result: List<Chat> = chats.response!!.profiles!!.map { Chat(it.id, it.photo100) };
-        Toast.makeText(this,result.size.toString(),Toast.LENGTH_SHORT).show()
         adapter.updateChats(result)
         adapter.notifyDataSetChanged()
     }

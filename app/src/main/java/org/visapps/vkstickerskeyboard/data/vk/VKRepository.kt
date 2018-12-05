@@ -2,6 +2,7 @@ package org.visapps.vkstickerskeyboard.data.vk
 
 import android.util.Log
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKSdk
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -45,7 +46,7 @@ class VKRepository private constructor(private val vkservice : VKService){
     }
 
     suspend fun getChats() : Result<ConversationsResponse>{
-        val response = vkservice.getConversations(API_VERSION,VKSdk.getAccessToken().accessToken,20,"all",true,"photo_100").await()
+        val response = vkservice.getConversations(API_VERSION,VKAccessToken.currentToken().accessToken,20,"all",true,"photo_100").await()
         try {
             if (response.isSuccessful){
                 //Log.e("Vasily", response.body())
