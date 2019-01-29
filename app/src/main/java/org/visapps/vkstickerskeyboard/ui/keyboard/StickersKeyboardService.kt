@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.keyboard_main.view.*
 import org.jetbrains.anko.intentFor
@@ -15,10 +16,10 @@ import org.visapps.vkstickerskeyboard.data.vk.ConversationsResponse
 import org.visapps.vkstickerskeyboard.ui.AuthActivity
 import org.visapps.vkstickerskeyboard.ui.adapter.ChatAdapter
 
-class StickersKeyboardService : InputMethodService(), StickersContract.View {
+class StickersKeyboardService : LifecycleKeyboardService() {
 
     private lateinit var view : View
-    private val presenter = StickersPresenter()
+    private val viewModel = StickersKeyboardViewModel()
 
     private lateinit var adapter : ChatAdapter
 
@@ -36,21 +37,41 @@ class StickersKeyboardService : InputMethodService(), StickersContract.View {
         view.chats.setHasFixedSize(true)
         adapter = ChatAdapter(this)
         view.chats.adapter = adapter
-        presenter.attach(this)
+        registerObservers()
         return view
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         Log.i("Vasily", "Start")
-        presenter.onStart()
         super.onStartInputView(info, restarting)
     }
 
     override fun onFinishInput() {
         Log.i("Vasily", "Stop")
-        presenter.onStop()
         super.onFinishInput()
     }
+
+    fun registerObservers() {
+        viewModel.loginStatus.observe(this, Observer {isLoggedIn->
+            isLoggedIn?.let {
+                if(isLoggedIn){
+                    view.loginbutton.visibility = View.GONE
+                    view.mainview.visibility = View.VISIBLE
+                }
+                else{
+                    view.loginbutton.visibility = View.VISIBLE
+                    view.mainview.visibility = View.GONE
+                }
+            }
+        })
+        viewModel.chats.observe(this, Observer { chats->
+            chats?.let {
+
+            }
+        })
+    }
+
+
 
     override fun updateLoginStatus(loggedIn: Boolean) {
         if(loggedIn){

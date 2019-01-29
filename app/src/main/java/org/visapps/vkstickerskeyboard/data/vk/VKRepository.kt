@@ -38,7 +38,6 @@ class VKRepository private constructor(private val vkservice : VKService){
             return Retrofit.Builder()
                 .baseUrl(URL)
                 .client(client)
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(VKService::class.java)
@@ -49,8 +48,7 @@ class VKRepository private constructor(private val vkservice : VKService){
         val response = vkservice.getConversations(API_VERSION,VKAccessToken.currentToken().accessToken,20,"all",true,"photo_100").await()
         try {
             if (response.isSuccessful){
-                //Log.e("Vasily", response.body())
-
+                val conversations = response.body()
                 return Result.Success(response.body())
             }
             else{
