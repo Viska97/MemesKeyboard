@@ -10,11 +10,15 @@ import org.jetbrains.anko.defaultSharedPreferences
 import org.visapps.vkstickerskeyboard.VKStickersKeyboard
 import org.visapps.vkstickerskeyboard.data.response.Result
 import org.visapps.vkstickerskeyboard.data.vk.VKRepository
+import kotlin.coroutines.CoroutineContext
 
-class StickersPresenter : StickersContract.Presenter {
+class StickersPresenter : StickersContract.Presenter, CoroutineScope {
+
+    override val coroutineContext: CoroutineContext
+        get() =  job + Dispatchers.Main
 
     private var view : StickersContract.View? = null
-    private var chatsJob: Job? = null
+    private var job = Job()
 
     private val vkAccessTokenTracker = object : VKAccessTokenTracker(){
         override fun onVKAccessTokenChanged(oldToken: VKAccessToken?, newToken: VKAccessToken?) {
@@ -36,7 +40,7 @@ class StickersPresenter : StickersContract.Presenter {
     }
 
     override fun onStop() {
-        chatsJob?.cancel()
+        job.cancel()
     }
 
     override fun detachView() {
@@ -49,7 +53,7 @@ class StickersPresenter : StickersContract.Presenter {
     }
 
     override fun loadChats() {
-        chatsJob = CoroutineScope(Dispatchers.Main).launch {
+        this.launch(context = coroutineContext) {
             view?.clearChats()
             view?.updateLoadingState(true)
             val result = VKRepository.get().getChats()

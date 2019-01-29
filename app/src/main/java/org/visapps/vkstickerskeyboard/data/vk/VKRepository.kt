@@ -4,6 +4,9 @@ import android.util.Log
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKSdk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkstickerskeyboard.data.response.Result
@@ -45,18 +48,23 @@ class VKRepository private constructor(private val vkservice : VKService){
         }
     }
 
-    suspend fun getChats() : Result<ConversationsResponse>{
-        val response = vkservice.getConversations(API_VERSION,VKAccessToken.currentToken().accessToken,20,"all",true,"photo_100").await()
+    suspend fun getChats() : Result<ConversationsResponse> {
+        val response = withContext(Dispatchers.IO) {
+            vkservice.getConversations(
+                API_VERSION,
+                VKAccessToken.currentToken().accessToken,
+                20,
+                "all",
+                true,
+                "photo_100")
+        }
         try {
-            if (response.isSuccessful){
-                //Log.e("Vasily", response.body())
-
+            if (response.isSuccessful) {
                 return Result.Success(response.body())
-            }
-            else{
+            } else {
                 return Result.Error(IOException("Error occurred during fetching movies!"))
             }
-        } catch(e : Exception){
+        } catch (e: Exception) {
             return Result.Error(IOException("Unable to fetch movies!"))
         }
     }
