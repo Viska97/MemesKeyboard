@@ -49,15 +49,13 @@ class VKRepository private constructor(private val vkservice : VKService){
     }
 
     suspend fun getChats() : Result<ConversationsResponse> {
-        val response = withContext(Dispatchers.IO) {
-            vkservice.getConversations(
+        val response = vkservice.getConversations(
                 API_VERSION,
                 VKAccessToken.currentToken().accessToken,
                 20,
                 "all",
                 true,
-                "photo_100")
-        }
+                "photo_100").await()
         try {
             if (response.isSuccessful) {
                 return Result.Success(response.body())
