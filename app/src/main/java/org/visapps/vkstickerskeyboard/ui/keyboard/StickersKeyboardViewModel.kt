@@ -44,11 +44,13 @@ class StickersKeyboardViewModel : ViewModel(), CoroutineScope {
     fun loadChats() {
         this.launch(context = coroutineContext) {
             chats.postValue(null)
+            loadingState.postValue(true)
             val result = VKRepository.get().getChats()
             when(result){
                 is Result.Success -> chats.postValue(result.data)
                 is Result.Error -> error.postValue("Network error")
             }
+            loadingState.postValue(false)
         }
 
     }

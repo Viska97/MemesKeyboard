@@ -1,6 +1,7 @@
 package org.visapps.vkstickerskeyboard.data.vk
 
 import android.util.Log
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKSdk
 import okhttp3.OkHttpClient
@@ -12,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.lang.Exception
 
-class VKRepository private constructor(private val vkservice : VKService){
+class VKRepository private constructor(private val vkservice: VKService) {
 
     companion object {
 
@@ -21,42 +22,49 @@ class VKRepository private constructor(private val vkservice : VKService){
         private const val API_VERSION = "5.92"
 
 
-        @Volatile private var instance: VKRepository? = null
+        @Volatile
+        private var instance: VKRepository? = null
 
         fun get() =
             instance ?: synchronized(this) {
                 instance ?: buildRepository().also { instance = it }
             }
 
-        private fun buildRepository() : VKRepository{
+        private fun buildRepository(): VKRepository {
             return VKRepository(buildService())
         }
 
-        private fun buildService() : VKService{
+        private fun buildService(): VKService {
             val interceptor = HttpLoggingInterceptor();
             interceptor.level = HttpLoggingInterceptor.Level.BODY
             val client = OkHttpClient.Builder().addInterceptor(interceptor).build()
             return Retrofit.Builder()
                 .baseUrl(URL)
                 .client(client)
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(VKService::class.java)
         }
     }
 
-    suspend fun getChats() : Result<List<Chat>>{
-        try{
-            val response = vkservice.getConversations(API_VERSION,VKAccessToken.currentToken().accessToken,20,"all",true,"photo_100")
-            if (response.isSuccessful){
-                val chats = response.body()?.response?.profiles?.map { Chat(it.id, it.photo100) };
+    suspend fun getChats(): Result<List<Chat>> {
+        try {
+            val response = vkservice.getConversations(
+                API_VERSION,
+                VKAccessToken.currentToken().accessToken,
+                20,
+                "all",
+                true,
+                "photo_max"
+            ).await()
+            if (response.isSuccessful) {
+                val chats = response.body()?.response?.profiles?.map { Chat(it.id, it.photomax) };
                 return Result.Success(chats)
-            }
-            else{
+            } else {
                 return Result.Error(IOException("Error occurred during fetching movies!"))
             }
-        }
-        catch(e : Exception){
+        } catch (e: Exception) {
             return Result.Error(IOException("Error occurred during fetching movies!"))
         }
     }

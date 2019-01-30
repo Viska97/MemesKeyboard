@@ -168,9 +168,9 @@ class Profile {
     @SerializedName("can_access_closed")
     @Expose
     var canAccessClosed: Boolean? = null
-    @SerializedName("photo_100")
+    @SerializedName("photo_max")
     @Expose
-    var photo100: String? = null
+    var photomax: String? = null
 
 }
 
