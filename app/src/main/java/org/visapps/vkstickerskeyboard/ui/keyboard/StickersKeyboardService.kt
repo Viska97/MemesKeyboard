@@ -5,6 +5,9 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.keyboard_main.view.*
@@ -16,12 +19,19 @@ import org.visapps.vkstickerskeyboard.data.vk.ConversationsResponse
 import org.visapps.vkstickerskeyboard.ui.AuthActivity
 import org.visapps.vkstickerskeyboard.ui.adapter.ChatAdapter
 
-class StickersKeyboardService : LifecycleKeyboardService() {
+class StickersKeyboardService : InputMethodService(), LifecycleOwner {
 
+
+    val registry = LifecycleRegistry(this)
     private lateinit var view : View
-    private val viewModel = StickersKeyboardViewModel()
+    private lateinit var viewModel : StickersKeyboardViewModel
 
     private lateinit var adapter : ChatAdapter
+
+
+    override fun getLifecycle(): Lifecycle {
+        return registry
+    }
 
     override fun onCreate() {
         setTheme(R.style.AppTheme)
@@ -37,11 +47,15 @@ class StickersKeyboardService : LifecycleKeyboardService() {
         view.chats.setHasFixedSize(true)
         adapter = ChatAdapter(this)
         view.chats.adapter = adapter
+        viewModel = StickersKeyboardViewModel()
         registerObservers()
+        registry.markState(Lifecycle.State.CREATED)
         return view
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
+        registry.markState(Lifecycle.State.RESUMED)
+        viewModel.loadState()
         Log.i("Vasily", "Start")
         super.onStartInputView(info, restarting)
     }
@@ -51,55 +65,48 @@ class StickersKeyboardService : LifecycleKeyboardService() {
         super.onFinishInput()
     }
 
-    fun registerObservers() {
-        viewModel.loginStatus.observe(this, Observer {isLoggedIn->
+    override fun onDestroy() {
+        onFinishInput()
+        registry.markState(Lifecycle.State.DESTROYED)
+        Log.i("Vasily", "Destroy")
+    }
+
+
+
+    private fun registerObservers() {
+        viewModel.loginStatus.observe(this, Observer { isLoggedIn ->
             isLoggedIn?.let {
-                if(isLoggedIn){
+                if (isLoggedIn) {
                     view.loginbutton.visibility = View.GONE
                     view.mainview.visibility = View.VISIBLE
-                }
-                else{
+                } else {
                     view.loginbutton.visibility = View.VISIBLE
                     view.mainview.visibility = View.GONE
                 }
             }
         })
-        viewModel.chats.observe(this, Observer { chats->
-            chats?.let {
-
+        viewModel.chats.observe(this, Observer { chats ->
+            if(chats == null){
+                adapter.clear()
+            }
+            else{
+                adapter.updateChats(chats)
+            }
+            adapter.notifyDataSetChanged()
+        })
+        viewModel.loadingState.observe(this, Observer { loading ->
+            loading?.let {
+                if (loading) {
+                    view.progress.visibility = View.VISIBLE
+                } else {
+                    view.progress.visibility = View.GONE
+                }
             }
         })
-    }
-
-
-
-    override fun updateLoginStatus(loggedIn: Boolean) {
-        if(loggedIn){
-            view.loginbutton.visibility = View.GONE
-            view.mainview.visibility = View.VISIBLE
-        }
-        else{
-            view.loginbutton.visibility = View.VISIBLE
-            view.mainview.visibility = View.GONE
-        }
-    }
-
-    override fun updateChats(chats: ConversationsResponse) {
-        val result: List<Chat> = chats.response!!.profiles!!.map { Chat(it.id, it.photo100) };
-        adapter.updateChats(result)
-        adapter.notifyDataSetChanged()
-    }
-
-    override fun clearChats() {
-        adapter.clear()
-        adapter.notifyDataSetChanged()
-    }
-
-    override fun updateLoadingState(isLoading: Boolean) {
-        if(isLoading){view.progress.visibility = View.VISIBLE}else{view.progress.visibility = View.GONE}
-    }
-
-    override fun showError(message: String) {
-        Toast.makeText(this, message,Toast.LENGTH_SHORT).show()
+        viewModel.error.observe(this, Observer { error ->
+            error?.let {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

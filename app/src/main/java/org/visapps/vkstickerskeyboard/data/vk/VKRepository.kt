@@ -1,15 +1,16 @@
 package org.visapps.vkstickerskeyboard.data.vk
 
 import android.util.Log
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKSdk
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.visapps.vkstickerskeyboard.data.models.Chat
 import org.visapps.vkstickerskeyboard.data.response.Result
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.lang.Exception
 
 class VKRepository private constructor(private val vkservice : VKService){
 
@@ -44,18 +45,19 @@ class VKRepository private constructor(private val vkservice : VKService){
         }
     }
 
-    suspend fun getChats() : Result<ConversationsResponse>{
-        val response = vkservice.getConversations(API_VERSION,VKAccessToken.currentToken().accessToken,20,"all",true,"photo_100").await()
-        try {
+    suspend fun getChats() : Result<List<Chat>>{
+        try{
+            val response = vkservice.getConversations(API_VERSION,VKAccessToken.currentToken().accessToken,20,"all",true,"photo_100")
             if (response.isSuccessful){
-                val conversations = response.body()
-                return Result.Success(response.body())
+                val chats = response.body()?.response?.profiles?.map { Chat(it.id, it.photo100) };
+                return Result.Success(chats)
             }
             else{
                 return Result.Error(IOException("Error occurred during fetching movies!"))
             }
-        } catch(e : Exception){
-            return Result.Error(IOException("Unable to fetch movies!"))
+        }
+        catch(e : Exception){
+            return Result.Error(IOException("Error occurred during fetching movies!"))
         }
     }
 

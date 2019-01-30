@@ -1,4 +1,4 @@
-package org.visapps.vkstickerskeyboard.utils
+package org.visapps.vkstickerskeyboard.util
 
 import org.visapps.vkstickerskeyboard.data.response.Result
 import java.io.IOException
