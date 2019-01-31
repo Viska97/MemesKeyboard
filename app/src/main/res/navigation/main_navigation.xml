@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_navigation"
+            app:startDestination="@id/navigation_allstickers">
+
+    <fragment android:id="@+id/navigation_allstickers"
+              android:name="org.visapps.vkstickerskeyboard.ui.fragments.AllStickersFragment"
+              android:label="@string/allstickers" tools:layout="@layout/all_stickers_fragment"/>
+    <fragment android:id="@+id/navigation_savedstickers"
+              android:name="org.visapps.vkstickerskeyboard.ui.fragments.SavedStickersFragment"
+              android:label="@string/savedstickers" tools:layout="@layout/saved_stickers_fragment"/>
+    <fragment android:id="@+id/navigation_account"
+              android:name="org.visapps.vkstickerskeyboard.ui.fragments.AccountFragment"
+              android:label="@string/account" tools:layout="@layout/account_fragment"/>
+</navigation>
