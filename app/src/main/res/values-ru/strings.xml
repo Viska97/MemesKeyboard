@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VK Stickers Keyboard</string>
+    <string name="allstickers">Все стикеры</string>
+    <string name="savedstickers">Сохраненные стикеры</string>
+    <string name="account">Аккаунт</string>
     <string name="vklogin">Войти через ВК</string>
 </resources>

@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">VK Stickers Keyboard</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="allstickers">All stickers</string>
+    <string name="savedstickers">Saved stickers</string>
+    <string name="account">Account</string>
     <string name="vklogin">Login with VK account</string>
     <string name="title_activity_auth">Authentication</string>
     <string name="retrylogin">Retry login</string>

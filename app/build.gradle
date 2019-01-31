@@ -51,6 +51,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-common:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha02'
+    implementation "android.arch.navigation:navigation-fragment-ktx:1.0.0-alpha11"
+    implementation "android.arch.navigation:navigation-ui-ktx:1.0.0-alpha11"
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'

@@ -13,7 +13,10 @@
         <item name="android:textColorPrimary">@color/colorAccent</item>
     </style>
 
-
     <style name="AppTheme.PopupOverlay" parent="@style/ThemeOverlay.AppCompat.Light" />
+
+    <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorAccent</item>
+    </style>
 
 </resources>
