@@ -12,18 +12,6 @@ import org.jetbrains.anko.defaultSharedPreferences
 
 class VKStickersKeyboard : Application() {
 
-    private val vkAccessTokenTracker = object : VKAccessTokenTracker(){
-        override fun onVKAccessTokenChanged(oldToken: VKAccessToken?, newToken: VKAccessToken?) {
-            Log.e("vasily", "changed")
-            if(newToken == null){
-
-            }
-            else{
-
-            }
-        }
-    }
-
     companion object {
         const val TOKEN = "TOKEN"
         lateinit var instance: VKStickersKeyboard
@@ -31,9 +19,8 @@ class VKStickersKeyboard : Application() {
     }
 
     override fun onCreate() {
-        vkAccessTokenTracker.startTracking()
         VKSdk.initialize(this)
-        super.onCreate()
         instance = this
+        super.onCreate()
     }
 }
