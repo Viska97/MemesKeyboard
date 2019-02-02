@@ -1,6 +1,5 @@
-package org.visapps.vkstickerskeyboard
+package org.visapps.vkstickerskeyboard.util
 
-import android.util.Log
 import androidx.annotation.MainThread
 import androidx.annotation.Nullable
 import androidx.lifecycle.LifecycleOwner

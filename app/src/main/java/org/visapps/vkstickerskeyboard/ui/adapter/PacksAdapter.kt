@@ -1,20 +1,22 @@
 package org.visapps.vkstickerskeyboard.ui.adapter
 
+import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import org.visapps.vkstickerskeyboard.GlideRequests
 import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.data.models.Pack
+import org.visapps.vkstickerskeyboard.util.NetworkState
 
-class PacksAdapter(private val glide: GlideRequests, private val clickListener : (Int) -> Unit, private val retryCallback: () -> Unit) : PagedListAdapter<Pack, RecyclerView.ViewHolder>(
+class PacksAdapter(private val glide: GlideRequests, private val reloadCallback: () -> Unit) : PagedListAdapter<Pack, RecyclerView.ViewHolder>(
     PACK_COMPARATOR){
 
     private var networkState: Int? = null
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
-            R.layout.pack_item-> (holder as PackViewHolder).bind(getItem(position))
+            R.layout.pack_item-> (holder as PackItemViewHolder).bind(getItem(position))
             R.layout.network_state_item -> (holder as NetworkStateItemViewHolder).bindTo(
                 networkState)
         }
@@ -25,8 +27,7 @@ class PacksAdapter(private val glide: GlideRequests, private val clickListener :
         position: Int,
         payloads: MutableList<Any>) {
         if (payloads.isNotEmpty()) {
-            val item = getItem(position)
-            (holder as PackViewHolder).updateScore(item)
+            (holder as PackItemViewHolder).updateStatus(payloads[0] as Int)
         } else {
             onBindViewHolder(holder, position)
         }
@@ -34,13 +35,13 @@ class PacksAdapter(private val glide: GlideRequests, private val clickListener :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.pack_item -> RedditPostViewHolder.create(parent, glide)
-            R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, retryCallback)
+            R.layout.pack_item -> PackItemViewHolder.create(parent, glide)
+            R.layout.network_state_item -> NetworkStateItemViewHolder.create(parent, reloadCallback)
             else -> throw IllegalArgumentException("unknown view type $viewType")
         }
     }
 
-    private fun hasExtraRow() = networkState != null && networkState != NetworkState.LOADED
+    private fun hasExtraRow() = networkState != null && networkState != NetworkState.SUCCESS
 
     override fun getItemViewType(position: Int): Int {
         return if (hasExtraRow() && position == itemCount - 1) {
@@ -76,11 +77,19 @@ class PacksAdapter(private val glide: GlideRequests, private val clickListener :
                 oldItem.id == newItem.id
 
             override fun areItemsTheSame(oldItem: Pack, newItem: Pack): Boolean =
-                oldItem.name == newItem.name && oldItem.logo == newItem.logo
+                oldItem == newItem
 
             override fun getChangePayload(oldItem: Pack, newItem: Pack): Any? {
-                return Any()
+                return if (sameExceptStatus(oldItem, newItem)) {
+                    mutableListOf(newItem.status)
+                } else {
+                    null
+                }
             }
+        }
+
+        private fun sameExceptStatus(oldItem: Pack, newItem: Pack): Boolean {
+            return oldItem.name == newItem.name && oldItem.logo == newItem.logo
         }
     }
 }

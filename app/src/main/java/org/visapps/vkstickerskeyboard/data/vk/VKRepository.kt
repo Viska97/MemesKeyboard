@@ -7,7 +7,7 @@ import com.vk.sdk.VKSdk
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkstickerskeyboard.data.models.Chat
-import org.visapps.vkstickerskeyboard.data.response.Result
+import org.visapps.vkstickerskeyboard.util.Result
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException

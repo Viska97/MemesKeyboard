@@ -1,15 +1,13 @@
-package org.visapps.vkstickerskeyboard
+package org.visapps.vkstickerskeyboard.ui.activity
 
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.vk.sdk.VKSdk
 import kotlinx.android.synthetic.main.activity_main.*
+import org.visapps.vkstickerskeyboard.R
 
 class MainActivity : AppCompatActivity() {
 

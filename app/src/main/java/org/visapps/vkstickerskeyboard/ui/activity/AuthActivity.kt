@@ -1,4 +1,4 @@
-package org.visapps.vkstickerskeyboard.ui
+package org.visapps.vkstickerskeyboard.ui.activity
 
 import android.os.Bundle
 import android.app.Activity

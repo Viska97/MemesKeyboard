@@ -7,10 +7,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import org.visapps.vkstickerskeyboard.SingleLiveEvent
+import org.visapps.vkstickerskeyboard.util.SingleLiveEvent
 import org.visapps.vkstickerskeyboard.data.models.Chat
 import org.visapps.vkstickerskeyboard.data.vk.VKRepository
-import org.visapps.vkstickerskeyboard.data.response.Result
+import org.visapps.vkstickerskeyboard.util.Result
 import kotlin.coroutines.CoroutineContext
 
 class StickersKeyboardViewModel : ViewModel(), CoroutineScope {

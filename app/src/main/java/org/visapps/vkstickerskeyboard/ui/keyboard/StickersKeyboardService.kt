@@ -14,9 +14,7 @@ import kotlinx.android.synthetic.main.keyboard_main.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
 import org.visapps.vkstickerskeyboard.R
-import org.visapps.vkstickerskeyboard.data.models.Chat
-import org.visapps.vkstickerskeyboard.data.vk.ConversationsResponse
-import org.visapps.vkstickerskeyboard.ui.AuthActivity
+import org.visapps.vkstickerskeyboard.ui.activity.AuthActivity
 import org.visapps.vkstickerskeyboard.ui.adapter.ChatAdapter
 
 class StickersKeyboardService : InputMethodService(), LifecycleOwner {
