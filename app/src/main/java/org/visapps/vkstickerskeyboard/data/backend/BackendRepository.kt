@@ -1,6 +1,7 @@
 package org.visapps.vkstickerskeyboard.data.backend
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -29,7 +30,7 @@ class BackendRepository(private val datasource : BackendDataSource, private val 
         val refreshState = Transformations.switchMap(refreshTrigger) {
             refresh(searchText, pageSize)
         }
-        val livePagedList = database.packDao().searchPacks(searchText).toLiveData(pageSize = pageSize, boundaryCallback = boundaryCallback)
+        val livePagedList = database.packDao().searchPacks().toLiveData(pageSize = pageSize, boundaryCallback = boundaryCallback)
         return ListStatus(
             pagedList = livePagedList,
             networkState = boundaryCallback.networkState,
@@ -51,10 +52,9 @@ class BackendRepository(private val datasource : BackendDataSource, private val 
             val result = datasource.searchPacks(searchText, pageSize, 0)
             when(result){
                 is Result.Success -> {
-                    database.runInTransaction {
-                        database.packDao().deleteNotSaved()
-                        database.packDao().insertPacks(result.data)
-                    }
+                    database.packDao().deleteNotSaved()
+                    val count = database.packDao().insertPacks(result.data)
+                    Log.i("Vasily", "count fucked again: " + count.size.toString())
                     networkState.postValue(NetworkState.SUCCESS)
                 }
                 is Result.Error -> {

@@ -1,20 +1,29 @@
 package org.visapps.vkstickerskeyboard.data.backend
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import org.visapps.vkstickerskeyboard.data.models.Pack
 
-data class SearchPayload(
+class SearchPayload (
     @SerializedName("search_text")
+    @Expose
     val searchText: String = "",
     @SerializedName("limit")
+    @Expose
     val limit: Int = 30,
     @SerializedName("offset")
+    @Expose
     val offset: Int = 0
 )
 
-data class SearchResponse(
+class SearchResponse {
     @SerializedName("result")
-    val result: List<Pack>,
+    @Expose
+    var result: List<Pack>? = null
     @SerializedName("errorMessage")
-    val errorMessage : String
-)
+    @Expose
+    var errorMessage: String? = "fucked"
+    @SerializedName("errorCode")
+    @Expose
+    var errorCode: Int? = 9
+}

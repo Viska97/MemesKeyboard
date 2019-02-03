@@ -9,20 +9,20 @@ import com.google.gson.annotations.SerializedName
     foreignKeys = [ForeignKey(entity = Pack::class, parentColumns = ["id"], childColumns = ["pack_id"], onDelete = CASCADE)],
     indices = [Index("pack_id")]
 )
-data class Sticker(
+class Sticker(
     @PrimaryKey
     @SerializedName("id")
     @ColumnInfo(name = "id")
-    val id: Int,
+    var id: Int,
     @SerializedName("pack_id")
     @ColumnInfo(name = "pack_id")
-    val pack_id: Int,
+    var pack_id: Int,
     @SerializedName("attachment")
     @ColumnInfo(name = "attachment")
-    val attachment: String,
+    var attachment: String,
     @SerializedName("image")
     @ColumnInfo(name = "image")
-    val image: String
+    var image: String
 ) {
 
 }
