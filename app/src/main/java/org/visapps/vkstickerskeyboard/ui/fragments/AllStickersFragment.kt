@@ -92,6 +92,8 @@ class AllStickersFragment : Fragment() {
             swipe_refresh.isRefreshing = it == NetworkState.RUNNING
         })
         swipe_refresh.setOnRefreshListener {
+            packs_list.scrollToPosition(0)
+            (packs_list.adapter as? PacksAdapter)?.submitList(null)
             viewModel.refresh()
         }
     }
