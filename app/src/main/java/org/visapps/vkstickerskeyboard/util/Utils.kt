@@ -1,9 +1,8 @@
 package org.visapps.vkstickerskeyboard.util
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
-import androidx.paging.PagedList
+import androidx.paging.*
 import java.io.IOException
 
 data class ListStatus<T>(
@@ -17,7 +16,6 @@ suspend fun <T : Any> safeApiCall(call: suspend () -> Result<T>): Result<T> {
     return try {
         call()
     } catch (e: Exception) {
-        Log.i("Vasily", e.message)
         Result.Error(IOException(e))
     }
 }
@@ -40,4 +38,3 @@ object NetworkState{
     const val SUCCESS = 1
     const val FAILED = 2
 }
-

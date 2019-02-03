@@ -13,47 +13,48 @@ class PacksBoundaryCallback(
     private val searchText: String,
     private val pageSize: Int,
     private val dataSource: BackendDataSource,
-    private val database : AppDatabase,
-    private var job : Job
+    private val database : AppDatabase
 ) : PagedList.BoundaryCallback<Pack>(){
 
     var networkState = MutableLiveData<Int>()
 
-    private var lastOffset = 0
+    private var isRequestInProgress = false
 
     override fun onZeroItemsLoaded() {
-        Log.i("Vasily", "onZeroItemsLoaded")
-        load(0)
+        Log.i("Vasily", "zero")
+        loadPacks()
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: Pack) {
-        load(itemAtEnd.id)
+        Log.i("Vasily", "end")
+        loadPacks()
     }
 
     fun reload() {
-        load(lastOffset)
+        loadPacks()
     }
 
-    private fun load(offset : Int) {
-        Log.i("Vasily", "request loading")
-        if(!job.isActive){
-            lastOffset = offset
-            job = GlobalScope.launch(Dispatchers.IO) {
-                Log.i("Vasily", "loading")
-                networkState.postValue(NetworkState.RUNNING)
-                val result = dataSource.searchPacks(searchText, pageSize, offset)
-                when(result){
-                    is Result.Success -> {
-                        Log.i("Vasily", result.data.size.toString())
-                        database.packDao().insertPacks(result.data)
-                        networkState.postValue(NetworkState.SUCCESS)
-                    }
-                    is Result.Error -> {
-                        networkState.postValue(NetworkState.FAILED)
-                    }
+    fun loadPacks() {
+        if (isRequestInProgress) return
+        isRequestInProgress = true
+        GlobalScope.launch(Dispatchers.IO) {
+            networkState.postValue(NetworkState.RUNNING)
+            delay(1000L)
+            val offset = database.packDao().packsCount()
+            Log.i("Vasily", "loading from offset $offset")
+            val result = dataSource.searchPacks(searchText, pageSize, offset)
+            when(result){
+                is Result.Success -> {
+                    database.packDao().insertPacks(result.data)
+                    networkState.postValue(NetworkState.SUCCESS)
+                }
+                is Result.Error -> {
+                    networkState.postValue(NetworkState.FAILED)
                 }
             }
+            isRequestInProgress = false
         }
+
     }
 
 }

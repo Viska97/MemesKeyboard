@@ -5,11 +5,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,17 +20,20 @@ import org.visapps.vkstickerskeyboard.util.NetworkState
 import org.visapps.vkstickerskeyboard.util.Result
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.Executors
 
-class BackendRepository(private val datasource : BackendDataSource, private val database : AppDatabase) {
+class BackendRepository(private val datasource: BackendDataSource, private val database: AppDatabase) {
 
-    fun searchPacks(searchText : String, pageSize: Int) : ListStatus<Pack> {
-        val job = Job()
-        val boundaryCallback = PacksBoundaryCallback(searchText,pageSize,datasource,database, job)
+    fun searchPacks(searchText: String, pageSize: Int): ListStatus<Pack> {
+        val boundaryCallback = PacksBoundaryCallback(searchText, pageSize, datasource, database)
         val refreshTrigger = MutableLiveData<Unit>()
         val refreshState = Transformations.switchMap(refreshTrigger) {
             refresh(searchText, pageSize)
         }
-        val livePagedList = database.packDao().searchPacks().toLiveData(pageSize = pageSize, boundaryCallback = boundaryCallback)
+        val config = PagedList.Config.Builder().setPageSize(pageSize).setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(pageSize).setPrefetchDistance(2).build()
+        val livePagedList = database.packDao().searchPacks("%$searchText%")
+            .toLiveData(config = config, boundaryCallback = boundaryCallback)
         return ListStatus(
             pagedList = livePagedList,
             networkState = boundaryCallback.networkState,
@@ -44,17 +47,16 @@ class BackendRepository(private val datasource : BackendDataSource, private val 
         )
     }
 
-    private fun refresh(searchText : String, pageSize: Int) : LiveData<Int> {
+    private fun refresh(searchText: String, pageSize: Int): LiveData<Int> {
         val networkState = MutableLiveData<Int>()
         networkState.postValue(NetworkState.RUNNING)
         GlobalScope.launch(Dispatchers.IO) {
             networkState.postValue(NetworkState.RUNNING)
             val result = datasource.searchPacks(searchText, pageSize, 0)
-            when(result){
+            when (result) {
                 is Result.Success -> {
                     database.packDao().deleteNotSaved()
-                    val count = database.packDao().insertPacks(result.data)
-                    Log.i("Vasily", "count fucked again: " + count.size.toString())
+                    database.packDao().insertPacks(result.data)
                     networkState.postValue(NetworkState.SUCCESS)
                 }
                 is Result.Error -> {

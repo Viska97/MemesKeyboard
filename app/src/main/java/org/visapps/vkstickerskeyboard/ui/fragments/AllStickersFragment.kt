@@ -32,6 +32,7 @@ class AllStickersFragment : Fragment() {
         }
 
         override fun onQueryTextChange(newText: String?): Boolean {
+            updateSearchText(newText)
             return true
         }
     }
@@ -55,7 +56,6 @@ class AllStickersFragment : Fragment() {
         viewModel = ViewModelProviders.of(this, factory).get(AllStickersViewModel::class.java)
         initAdapter()
         initSwipeToRefresh()
-        initSearch()
         viewModel.showPacks("")
     }
 
@@ -96,8 +96,13 @@ class AllStickersFragment : Fragment() {
         }
     }
 
-    private fun initSearch() {
-
+    private fun updateSearchText(newText : String?) {
+        newText?.let {
+            if (viewModel.showPacks(it)) {
+                packs_list.scrollToPosition(0)
+                (packs_list.adapter as? PacksAdapter)?.submitList(null)
+            }
+        }
     }
 
 }

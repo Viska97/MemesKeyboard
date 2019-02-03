@@ -12,22 +12,10 @@ class BackendDataSource(private val service: BackendService) {
         safeApiCall { requestSearch(searchText, limit, offset) }
 
     private suspend fun requestSearch(searchText: String, limit: Int, offset: Int): Result<List<Pack>> {
-        Log.i("Vasily", "start netwrok request")
         val response = service.searchPacks(SearchPayload(searchText, limit, offset)).await()
-        Log.i("Vasily", response.code().toString())
         if (response.isSuccessful) {
-            val body = response.body()
-            if (body != null) {
-                if(body.errorCode == null){
-                    Log.i("Vasily", "null")
-                }
-                else{
-                    Log.i("Vasily", "found value" + body.errorCode.toString())
-                }
-                Log.i("Vasily", "here something wrong")
-                Log.i("Vasily", "error" + body.errorMessage)
-                Log.i("Vasily", "count: " + body.result?.size)
-                return Result.Success(body.result!!)
+            response.body()?.result?.let {
+                return Result.Success(it)
             }
         }
         return Result.Error(

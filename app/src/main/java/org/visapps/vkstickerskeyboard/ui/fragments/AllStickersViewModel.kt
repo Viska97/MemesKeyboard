@@ -9,7 +9,7 @@ import org.visapps.vkstickerskeyboard.data.backend.BackendRepository
 class AllStickersViewModel(private val repository: BackendRepository) : ViewModel() {
     private val search = MutableLiveData<String>()
     private val status = map(search) {
-        repository.searchPacks(it, 30)
+        repository.searchPacks(it, 20)
     }
     val posts = switchMap(status, { it.pagedList })!!
     val networkState = switchMap(status, { it.networkState })!!
