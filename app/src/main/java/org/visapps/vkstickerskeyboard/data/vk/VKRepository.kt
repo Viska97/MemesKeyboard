@@ -60,7 +60,7 @@ class VKRepository private constructor(private val vkservice: VKService) {
             ).await()
             if (response.isSuccessful) {
                 val chats = response.body()?.response?.profiles?.map { Chat(it.id, it.photomax) };
-                return Result.Success(chats)
+                return Result.Success(chats!!)
             } else {
                 return Result.Error(IOException("Error occurred during fetching movies!"))
             }

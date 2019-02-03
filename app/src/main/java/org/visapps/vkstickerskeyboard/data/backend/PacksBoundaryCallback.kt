@@ -1,5 +1,6 @@
 package org.visapps.vkstickerskeyboard.data.backend
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import kotlinx.coroutines.*
@@ -17,10 +18,11 @@ class PacksBoundaryCallback(
 
     var networkState = MutableLiveData<Int>()
 
-    private var request = Job()
+    private var running : Boolean = false
     private var lastOffset = 0
 
     override fun onZeroItemsLoaded() {
+        Log.i("Vasily", "onZeroItemsLoaded")
         load(0)
     }
 
@@ -33,9 +35,12 @@ class PacksBoundaryCallback(
     }
 
     private fun load(offset : Int) {
-        if(!request.isActive){
+        Log.i("Vasily", "request loading")
+        if(!running){
             lastOffset = offset
-            request = GlobalScope.launch(Dispatchers.IO) {
+            GlobalScope.launch(Dispatchers.IO) {
+                running = true
+                Log.i("Vasily", "loading")
                 networkState.postValue(NetworkState.RUNNING)
                 val result = dataSource.searchPacks(searchText, pageSize, offset)
                 when(result){
@@ -47,6 +52,7 @@ class PacksBoundaryCallback(
                         networkState.postValue(NetworkState.FAILED)
                     }
                 }
+                running = false
             }
         }
     }

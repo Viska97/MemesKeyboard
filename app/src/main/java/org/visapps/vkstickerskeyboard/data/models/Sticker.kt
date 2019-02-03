@@ -1,16 +1,16 @@
 package org.visapps.vkstickerskeyboard.data.models
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
+import androidx.room.*
 import androidx.room.ForeignKey.CASCADE
 import com.google.gson.annotations.SerializedName
 
 @Entity(
     tableName = "stickers",
-    foreignKeys = [ForeignKey(entity = Pack::class, parentColumns = ["id"], childColumns = ["pack_id"], onDelete = CASCADE)]
+    foreignKeys = [ForeignKey(entity = Pack::class, parentColumns = ["id"], childColumns = ["pack_id"], onDelete = CASCADE)],
+    indices = [Index("pack_id")]
 )
 data class Sticker(
+    @PrimaryKey
     @SerializedName("id")
     @ColumnInfo(name = "id")
     val id: Int,

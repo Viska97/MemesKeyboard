@@ -7,4 +7,5 @@
     <string name="vklogin">Войти через ВК</string>
     <string name="reload">Перезагрузить</string>
     <string name="loadingerror">При загрузке данных произошла ошибка</string>
+    <string name="searchpacks">Поиск паков стикеров</string>
 </resources>

@@ -1,9 +1,13 @@
 package org.visapps.vkstickerskeyboard.data.database
 
 import android.content.Context
+import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import org.visapps.vkstickerskeyboard.data.models.Pack
+import org.visapps.vkstickerskeyboard.data.models.Sticker
 
+@Database(entities = [Pack::class, Sticker::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun packDao(): PackDao

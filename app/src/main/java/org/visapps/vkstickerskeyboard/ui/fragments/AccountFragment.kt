@@ -7,6 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
+import kotlinx.android.synthetic.main.account_fragment.*
 
 import org.visapps.vkstickerskeyboard.R
 
@@ -16,6 +20,7 @@ class AccountFragment : Fragment() {
         fun newInstance() = AccountFragment()
     }
 
+    private lateinit var navController: NavController
     private lateinit var viewModel: AccountViewModel
 
     override fun onCreateView(
@@ -27,8 +32,12 @@ class AccountFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        navController = findNavController()
+        if (activity is AppCompatActivity){ (activity as AppCompatActivity).setSupportActionBar(toolbar)}
+        toolbar.setNavigationOnClickListener {
+            navController.navigateUp()
+        }
         viewModel = ViewModelProviders.of(this).get(AccountViewModel::class.java)
-        // TODO: Use the ViewModel
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
