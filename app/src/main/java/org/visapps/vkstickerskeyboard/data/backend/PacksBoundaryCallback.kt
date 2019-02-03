@@ -13,12 +13,12 @@ class PacksBoundaryCallback(
     private val searchText: String,
     private val pageSize: Int,
     private val dataSource: BackendDataSource,
-    private val database : AppDatabase
+    private val database : AppDatabase,
+    private var job : Job
 ) : PagedList.BoundaryCallback<Pack>(){
 
     var networkState = MutableLiveData<Int>()
 
-    private var running : Boolean = false
     private var lastOffset = 0
 
     override fun onZeroItemsLoaded() {
@@ -36,15 +36,15 @@ class PacksBoundaryCallback(
 
     private fun load(offset : Int) {
         Log.i("Vasily", "request loading")
-        if(!running){
+        if(!job.isActive){
             lastOffset = offset
-            GlobalScope.launch(Dispatchers.IO) {
-                running = true
+            job = GlobalScope.launch(Dispatchers.IO) {
                 Log.i("Vasily", "loading")
                 networkState.postValue(NetworkState.RUNNING)
                 val result = dataSource.searchPacks(searchText, pageSize, offset)
                 when(result){
                     is Result.Success -> {
+                        Log.i("Vasily", result.data.size.toString())
                         database.packDao().insertPacks(result.data)
                         networkState.postValue(NetworkState.SUCCESS)
                     }
@@ -52,7 +52,6 @@ class PacksBoundaryCallback(
                         networkState.postValue(NetworkState.FAILED)
                     }
                 }
-                running = false
             }
         }
     }

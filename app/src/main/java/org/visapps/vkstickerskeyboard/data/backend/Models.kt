@@ -14,5 +14,7 @@ data class SearchPayload(
 
 data class SearchResponse(
     @SerializedName("result")
-    val result: List<Pack>
+    val result: List<Pack>,
+    @SerializedName("errorMessage")
+    val errorMessage : String
 )

@@ -8,6 +8,7 @@ import androidx.paging.toLiveData
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -22,7 +23,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class BackendRepository(private val datasource : BackendDataSource, private val database : AppDatabase) {
 
     fun searchPacks(searchText : String, pageSize: Int) : ListStatus<Pack> {
-        val boundaryCallback = PacksBoundaryCallback(searchText,pageSize,datasource,database)
+        val job = Job()
+        val boundaryCallback = PacksBoundaryCallback(searchText,pageSize,datasource,database, job)
         val refreshTrigger = MutableLiveData<Unit>()
         val refreshState = Transformations.switchMap(refreshTrigger) {
             refresh(searchText, pageSize)

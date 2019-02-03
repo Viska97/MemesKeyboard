@@ -18,6 +18,8 @@ class BackendDataSource(private val service: BackendService) {
         if (response.isSuccessful) {
             val body = response.body()
             if (body != null) {
+                Log.i("Vasily", "here something wrong")
+                Log.i("Vasily", body.errorMessage)
                 return Result.Success(body.result)
             }
         }
