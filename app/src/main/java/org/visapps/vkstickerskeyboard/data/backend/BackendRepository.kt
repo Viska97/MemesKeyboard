@@ -1,28 +1,33 @@
 package org.visapps.vkstickerskeyboard.data.backend
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkstickerskeyboard.data.database.AppDatabase
 import org.visapps.vkstickerskeyboard.data.models.Pack
+import org.visapps.vkstickerskeyboard.data.models.Sticker
 import org.visapps.vkstickerskeyboard.util.ListStatus
 import org.visapps.vkstickerskeyboard.util.NetworkState
 import org.visapps.vkstickerskeyboard.util.Result
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.Executors
 
 class BackendRepository(private val datasource: BackendDataSource, private val database: AppDatabase) {
+
+    suspend fun getStickers(packId : Int) : Result<List<Sticker>> {
+        val result = withContext(Dispatchers.IO) {database.stickerDao().getStickers(packId)}
+        if(result.isEmpty()){
+            return datasource.getStickers(packId)
+        }
+        return Result.Success(result)
+    }
 
     fun searchPacks(searchText: String, pageSize: Int): ListStatus<Pack> {
         val boundaryCallback = PacksBoundaryCallback(searchText, pageSize, datasource, database)

@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
     foreignKeys = [ForeignKey(entity = Pack::class, parentColumns = ["id"], childColumns = ["pack_id"], onDelete = CASCADE)],
     indices = [Index("pack_id")]
 )
-class Sticker(
+data class Sticker(
     @PrimaryKey
     @SerializedName("id")
     @ColumnInfo(name = "id")

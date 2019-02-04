@@ -9,4 +9,8 @@ interface BackendService {
 
     @POST("searchPacks")
     fun searchPacks(@Body payload : SearchPayload) : Deferred<Response<SearchResponse>>
+
+    @POST("getStickers")
+    fun getStickers(@Body payload : StickersPayload) : Deferred<Response<StickersResponse>>
+
 }

@@ -13,7 +13,6 @@ import org.jetbrains.anko.defaultSharedPreferences
 class VKStickersKeyboard : Application() {
 
     companion object {
-        const val TOKEN = "TOKEN"
         lateinit var instance: VKStickersKeyboard
             private set
     }
