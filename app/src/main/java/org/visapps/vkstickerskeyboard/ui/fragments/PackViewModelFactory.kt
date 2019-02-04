@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.visapps.vkstickerskeyboard.data.backend.BackendRepository
 
-class AllStickersViewModelFactory(private val backendRepository: BackendRepository)
-    : ViewModelProvider.NewInstanceFactory() {
+class PackViewModelFactory(private val backendRepository: BackendRepository, private val packId: Int) :
+    ViewModelProvider.NewInstanceFactory() {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return AllStickersViewModel(backendRepository) as T
+        return PackViewModel(backendRepository, packId) as T
     }
 }

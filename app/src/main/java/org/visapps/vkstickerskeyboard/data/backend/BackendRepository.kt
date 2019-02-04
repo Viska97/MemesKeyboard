@@ -18,8 +18,17 @@ import org.visapps.vkstickerskeyboard.util.NetworkState
 import org.visapps.vkstickerskeyboard.util.Result
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 
 class BackendRepository(private val datasource: BackendDataSource, private val database: AppDatabase) {
+
+    suspend fun getPack(packId: Int) : Result<Pack> {
+        val result = withContext(Dispatchers.IO) {database.packDao().getPackById(packId)}
+        result?.let {
+            return Result.Success(it)
+        }
+        return Result.Error(IOException("No pack found"))
+    }
 
     suspend fun getStickers(packId : Int) : Result<List<Sticker>> {
         val result = withContext(Dispatchers.IO) {database.stickerDao().getStickers(packId)}

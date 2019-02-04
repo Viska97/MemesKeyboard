@@ -60,7 +60,6 @@ class AllStickersFragment : Fragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        Log.i("Vasily", "State of all stickers saved")
         super.onSaveInstanceState(outState)
     }
 

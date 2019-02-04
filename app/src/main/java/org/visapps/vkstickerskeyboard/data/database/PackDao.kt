@@ -20,6 +20,9 @@ interface PackDao {
     @Query("SELECT COUNT(*) FROM packs")
     fun packsCount() : Int
 
+    @Query("SELECT * FROM packs WHERE id = :packId")
+    fun getPackById(packId : Int) : Pack?
+
     @Query("DELETE FROM packs WHERE status = 0")
     fun deleteNotSaved()
 
