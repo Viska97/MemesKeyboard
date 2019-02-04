@@ -1,10 +1,12 @@
 package org.visapps.vkstickerskeyboard.ui.adapter
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import org.visapps.vkstickerskeyboard.GlideRequests
 import org.visapps.vkstickerskeyboard.R
@@ -23,7 +25,9 @@ class PackItemViewHolder(private val view: View, private val glide: GlideRequest
     init {
         view.setOnClickListener {
             pack?.let{
-
+                val bundle = Bundle()
+                bundle.putInt("packId", it.id)
+                Navigation.findNavController(view).navigate(R.id.action_allstickers_to_pack, bundle)
             }
         }
         statusButton.setOnClickListener {

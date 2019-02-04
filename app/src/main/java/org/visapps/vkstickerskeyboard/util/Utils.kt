@@ -1,9 +1,13 @@
 package org.visapps.vkstickerskeyboard.util
 
+import android.content.Context
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.paging.*
 import java.io.IOException
+import android.util.DisplayMetrics
+
+
 
 data class ListStatus<T>(
     val pagedList: LiveData<PagedList<T>>,
@@ -19,6 +23,13 @@ suspend fun <T : Any> safeApiCall(call: suspend () -> Result<T>): Result<T> {
         Result.Error(IOException(e))
     }
 }
+
+fun calculateNoOfColumns(context: Context): Int {
+    val displayMetrics = context.resources.displayMetrics
+    val dpWidth = displayMetrics.widthPixels / displayMetrics.density
+    return (dpWidth / 120).toInt()
+}
+
 
 fun toVisibility(constraint : Boolean): Int {
     return if (constraint) {

@@ -5,9 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import org.visapps.vkstickerskeyboard.GlideRequests
 import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.data.models.Sticker
+import org.visapps.vkstickerskeyboard.util.StickerUrl
 
 class StickerItemViewHolder(private val view: View, private val glide: GlideRequests) :
     RecyclerView.ViewHolder(view)  {
@@ -18,7 +20,7 @@ class StickerItemViewHolder(private val view: View, private val glide: GlideRequ
     fun bind(sticker : Sticker?) {
         this.sticker = sticker
         sticker?.let {
-            glide.load(it.image).centerCrop().into(image)
+            glide.load(StickerUrl(it.image, it.pack_id, it.id)).diskCacheStrategy(DiskCacheStrategy.RESOURCE).fitCenter().into(image)
         }
     }
 
