@@ -31,7 +31,6 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
     }
 
     suspend fun getStickers(packId : Int) : Result<List<Sticker>> {
-        delay(2000L)
         val result = withContext(Dispatchers.IO) {database.stickerDao().getStickers(packId)}
         if(result.isEmpty()){
             return datasource.getStickers(packId)

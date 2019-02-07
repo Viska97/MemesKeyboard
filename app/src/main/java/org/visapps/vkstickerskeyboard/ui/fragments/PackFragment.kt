@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
-import com.google.android.material.button.MaterialButton
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.pack_fragment.*
 import kotlinx.android.synthetic.main.pack_fragment.view.*
 import org.visapps.vkstickerskeyboard.GlideApp
@@ -37,11 +37,11 @@ class PackFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.pack_fragment, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        val view : View = inflater.inflate(R.layout.pack_fragment, container, false)
+        view.reload_button.setOnClickListener {
+            viewModel.reload()
+        }
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -63,7 +63,7 @@ class PackFragment : Fragment() {
     private fun initAdapter() {
         val glide = GlideApp.with(this)
         val adapter = StickersAdapter(glide)
-        stickers_list.layoutManager = GridLayoutManager(requireActivity(), calculateNoOfColumns(requireActivity()), GridLayoutManager.VERTICAL, false)
+        stickers_list.layoutManager = GridLayoutManager(requireActivity(), calculateNoOfColumns(requireActivity()), RecyclerView.VERTICAL, false)
         stickers_list.adapter = adapter
         viewModel.stickers.observe(this, Observer<List<Sticker>> {
             adapter.updateStickers(it)
@@ -79,7 +79,7 @@ class PackFragment : Fragment() {
             progress_bar.visibility = toVisibility(it == NetworkState.RUNNING)
             error_msg.visibility = toVisibility(it == NetworkState.FAILED)
             reload_button.visibility = toVisibility(it == NetworkState.FAILED)
+            stickers_list.visibility = toVisibility(it == NetworkState.SUCCESS)
         })
     }
-
 }
