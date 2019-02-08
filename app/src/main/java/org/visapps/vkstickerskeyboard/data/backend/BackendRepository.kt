@@ -12,6 +12,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkstickerskeyboard.data.database.AppDatabase
 import org.visapps.vkstickerskeyboard.data.models.Pack
+import org.visapps.vkstickerskeyboard.data.models.PackObject
+import org.visapps.vkstickerskeyboard.data.models.PackStatus
 import org.visapps.vkstickerskeyboard.data.models.Sticker
 import org.visapps.vkstickerskeyboard.util.ListStatus
 import org.visapps.vkstickerskeyboard.util.NetworkState
@@ -22,6 +24,14 @@ import java.io.IOException
 
 class BackendRepository(private val datasource: BackendDataSource, private val database: AppDatabase) {
 
+    fun getPackStatus(packId: Int) : Int {
+        val status = database.packDao().getPackStatusById(packId)
+        status?.let {
+            return it
+        }
+        return PackStatus.NOTSAVED
+    }
+
     suspend fun getPack(packId: Int) : Result<Pack> {
         val result = withContext(Dispatchers.IO) {database.packDao().getPackById(packId)}
         result?.let {
@@ -30,12 +40,27 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
         return Result.Error(IOException("No pack found"))
     }
 
+    suspend fun savePack(packId : Int) : Result<PackObject> {
+        val pack = getPack(packId)
+        val stickers = datasource.getStickers(packId)
+        if(pack is Result.Success && stickers is Result.Success){
+            database.stickerDao().insertStickers(stickers.data)
+            val packObject = PackObject.create(pack.data, stickers.data)
+            return Result.Success(packObject)
+        }
+        return Result.Error(IOException("Unable to get pack stickers"))
+    }
+
     suspend fun getStickers(packId : Int) : Result<List<Sticker>> {
         val result = withContext(Dispatchers.IO) {database.stickerDao().getStickers(packId)}
         if(result.isEmpty()){
             return datasource.getStickers(packId)
         }
         return Result.Success(result)
+    }
+
+    fun getSavedPacks() : LiveData<List<Pack>> {
+        return database.packDao().getSavedPacks()
     }
 
     fun searchPacks(searchText: String, pageSize: Int): ListStatus<Pack> {

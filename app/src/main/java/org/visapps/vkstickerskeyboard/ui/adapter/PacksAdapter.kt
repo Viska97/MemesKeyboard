@@ -88,7 +88,7 @@ class PacksAdapter(private val glide: GlideRequests, private val reloadCallback:
             }
         }
 
-        private fun sameExceptStatus(oldItem: Pack, newItem: Pack): Boolean {
+        fun sameExceptStatus(oldItem: Pack, newItem: Pack): Boolean {
             return oldItem.name == newItem.name && oldItem.logo == newItem.logo
         }
     }

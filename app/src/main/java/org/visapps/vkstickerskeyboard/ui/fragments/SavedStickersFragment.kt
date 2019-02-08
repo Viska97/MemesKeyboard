@@ -2,17 +2,23 @@ package org.visapps.vkstickerskeyboard.ui.fragments
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.saved_stickers_fragment.*
+import org.visapps.vkstickerskeyboard.GlideApp
 
 import org.visapps.vkstickerskeyboard.R
+import org.visapps.vkstickerskeyboard.data.models.Pack
+import org.visapps.vkstickerskeyboard.ui.adapter.SavedPacksAdapter
+import org.visapps.vkstickerskeyboard.ui.viewmodels.SavedStickersViewModel
+import org.visapps.vkstickerskeyboard.util.InjectorUtils
+import org.visapps.vkstickerskeyboard.util.toVisibility
 
 class SavedStickersFragment : Fragment() {
 
@@ -37,12 +43,24 @@ class SavedStickersFragment : Fragment() {
         toolbar.setNavigationOnClickListener {
             navController.navigateUp()
         }
-        viewModel = ViewModelProviders.of(this).get(SavedStickersViewModel::class.java)
+        val factory = InjectorUtils.provideSavedStickersViewModelFactory(requireActivity())
+        viewModel = ViewModelProviders.of(this, factory).get(SavedStickersViewModel::class.java)
+        initAdapter()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        Log.i("Vasily", "State of saved stickers saved")
         super.onSaveInstanceState(outState)
+    }
+
+    private fun initAdapter() {
+        val glide = GlideApp.with(this)
+        val adapter = SavedPacksAdapter(glide)
+        packs_list.adapter = adapter
+        viewModel.packs.observe(this, Observer<List<Pack>>{
+            adapter.updatePacks(it)
+            packs_list.visibility = toVisibility(it.isNotEmpty())
+            empty_msg.visibility = toVisibility(it.isEmpty())
+        })
     }
 
 }

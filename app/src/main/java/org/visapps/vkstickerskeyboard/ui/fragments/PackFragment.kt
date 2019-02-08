@@ -2,7 +2,6 @@ package org.visapps.vkstickerskeyboard.ui.fragments
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +19,7 @@ import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.data.models.Pack
 import org.visapps.vkstickerskeyboard.data.models.Sticker
 import org.visapps.vkstickerskeyboard.ui.adapter.StickersAdapter
+import org.visapps.vkstickerskeyboard.ui.viewmodels.PackViewModel
 import org.visapps.vkstickerskeyboard.util.InjectorUtils
 import org.visapps.vkstickerskeyboard.util.NetworkState
 import org.visapps.vkstickerskeyboard.util.calculateNoOfColumns

@@ -1,4 +1,4 @@
-package org.visapps.vkstickerskeyboard.ui.fragments
+package org.visapps.vkstickerskeyboard.ui.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel;

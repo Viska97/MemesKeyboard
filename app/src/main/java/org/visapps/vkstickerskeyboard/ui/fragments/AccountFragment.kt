@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.account_fragment.*
 
 import org.visapps.vkstickerskeyboard.R
+import org.visapps.vkstickerskeyboard.ui.viewmodels.AccountViewModel
 
 class AccountFragment : Fragment() {
 

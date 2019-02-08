@@ -2,7 +2,6 @@ package org.visapps.vkstickerskeyboard.ui.fragments
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -17,6 +16,7 @@ import org.visapps.vkstickerskeyboard.GlideApp
 import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.data.models.Pack
 import org.visapps.vkstickerskeyboard.ui.adapter.PacksAdapter
+import org.visapps.vkstickerskeyboard.ui.viewmodels.AllStickersViewModel
 import org.visapps.vkstickerskeyboard.util.InjectorUtils
 import org.visapps.vkstickerskeyboard.util.NetworkState
 
@@ -63,9 +63,9 @@ class AllStickersFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.all_stickers_menu, menu)
-        val searchView = menu?.findItem(R.id.searchBar)?.actionView as SearchView?
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.all_stickers_menu, menu)
+        val searchView = menu.findItem(R.id.searchBar)?.actionView as SearchView?
         searchView?.queryHint = getString(R.string.searchpacks)
         searchView?.setOnQueryTextListener(queryTextListener)
         searchView?.isIconified = true

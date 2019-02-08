@@ -2,12 +2,13 @@ package org.visapps.vkstickerskeyboard.util
 
 import android.content.Context
 import org.visapps.vkstickerskeyboard.data.backend.BackendRepository
-import org.visapps.vkstickerskeyboard.ui.fragments.AllStickersViewModelFactory
-import org.visapps.vkstickerskeyboard.ui.fragments.PackViewModelFactory
+import org.visapps.vkstickerskeyboard.ui.viewmodels.AllStickersViewModelFactory
+import org.visapps.vkstickerskeyboard.ui.viewmodels.PackViewModelFactory
+import org.visapps.vkstickerskeyboard.ui.viewmodels.SavedStickersViewModelFactory
 
 object InjectorUtils {
 
-    private fun getBackendRepository(context: Context) : BackendRepository {
+    fun getBackendRepository(context: Context) : BackendRepository {
         return BackendRepository.get(context)
     }
 
@@ -19,6 +20,11 @@ object InjectorUtils {
     fun providePackViewModelFactory(context: Context, packId : Int) : PackViewModelFactory {
         val repository = getBackendRepository(context)
         return PackViewModelFactory(repository, packId)
+    }
+
+    fun provideSavedStickersViewModelFactory(context: Context) : SavedStickersViewModelFactory {
+        val repository = getBackendRepository(context)
+        return SavedStickersViewModelFactory(repository)
     }
 
 }
