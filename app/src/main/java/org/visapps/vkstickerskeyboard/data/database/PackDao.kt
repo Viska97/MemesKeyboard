@@ -15,7 +15,7 @@ interface PackDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertPacks(packs : List<Pack>) : List<Long>
 
-    @Query("SELECT * FROM packs WHERE name LIKE :searchText ORDER BY id ASC")
+    @Query("SELECT * FROM packs WHERE name LIKE :searchText AND updated = 1 ORDER BY id ASC")
     fun searchPacks(searchText : String) : DataSource.Factory<Int, Pack>
 
     @Query("SELECT COUNT(*) FROM packs")

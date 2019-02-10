@@ -40,6 +40,13 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
         return Result.Error(IOException("No pack found"))
     }
 
+    suspend fun savePack(pack : Pack, stickers : List<Sticker>) = coroutineScope {
+        database.runInTransaction {
+            database.stickerDao().insertStickers(stickers)
+
+        }
+    }
+
     suspend fun savePack(packId : Int) : Result<PackObject> {
         val pack = getPack(packId)
         val stickers = datasource.getStickers(packId)
