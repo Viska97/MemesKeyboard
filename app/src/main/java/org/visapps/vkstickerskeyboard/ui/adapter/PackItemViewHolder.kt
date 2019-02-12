@@ -8,11 +8,14 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import org.visapps.vkstickerskeyboard.GlideRequests
 import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.data.models.Pack
 import org.visapps.vkstickerskeyboard.data.models.PackStatus
 import org.visapps.vkstickerskeyboard.util.toVisibility
+import org.visapps.vkstickerskeyboard.workers.SavePackWorker
 
 class PackItemViewHolder(private val view: View, private val glide: GlideRequests) :
     RecyclerView.ViewHolder(view) {
@@ -32,7 +35,10 @@ class PackItemViewHolder(private val view: View, private val glide: GlideRequest
         }
         statusButton.setOnClickListener {
             pack?.let{
-
+                it.status = PackStatus.INPROGRESS
+                bind(it)
+                val workRequest = OneTimeWorkRequest.Builder(SavePackWorker::class.java).build()
+                WorkManager.getInstance().enqueue(workRequest)
             }
         }
     }

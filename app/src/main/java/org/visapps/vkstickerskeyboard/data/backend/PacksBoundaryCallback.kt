@@ -21,12 +21,10 @@ class PacksBoundaryCallback(
     private var isRequestInProgress = false
 
     override fun onZeroItemsLoaded() {
-        Log.i("Vasily", "zero")
         loadPacks()
     }
 
     override fun onItemAtEndLoaded(itemAtEnd: Pack) {
-        Log.i("Vasily", "end")
         loadPacks()
     }
 
@@ -34,18 +32,17 @@ class PacksBoundaryCallback(
         loadPacks()
     }
 
-    fun loadPacks() {
+    private fun loadPacks() {
         if (isRequestInProgress) return
         isRequestInProgress = true
         GlobalScope.launch(Dispatchers.IO) {
             networkState.postValue(NetworkState.RUNNING)
             delay(1000L)
             val offset = database.packDao().packsCount()
-            Log.i("Vasily", "loading from offset $offset")
             val result = dataSource.searchPacks(searchText, pageSize, offset)
             when(result){
                 is Result.Success -> {
-                    database.packDao().insertPacks(result.data)
+                    database.packDao().addPacks(result.data)
                     networkState.postValue(NetworkState.SUCCESS)
                 }
                 is Result.Error -> {

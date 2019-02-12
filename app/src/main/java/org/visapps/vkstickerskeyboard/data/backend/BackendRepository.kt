@@ -12,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkstickerskeyboard.data.database.AppDatabase
 import org.visapps.vkstickerskeyboard.data.models.Pack
-import org.visapps.vkstickerskeyboard.data.models.PackObject
 import org.visapps.vkstickerskeyboard.data.models.PackStatus
 import org.visapps.vkstickerskeyboard.data.models.Sticker
 import org.visapps.vkstickerskeyboard.util.ListStatus
@@ -32,38 +31,50 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
         return PackStatus.NOTSAVED
     }
 
-    suspend fun getPack(packId: Int) : Result<Pack> {
-        val result = withContext(Dispatchers.IO) {database.packDao().getPackById(packId)}
+    suspend fun getPack(packId: Int) : Result<Pack> = coroutineScope{
+        val result = database.packDao().getPackById(packId)
         result?.let {
-            return Result.Success(it)
+            return@coroutineScope Result.Success(it)
         }
-        return Result.Error(IOException("No pack found"))
+        return@coroutineScope Result.Error(IOException("No pack found"))
     }
 
-    suspend fun savePack(pack : Pack, stickers : List<Sticker>) = coroutineScope {
+    suspend fun updatePackStatus(packId: Int, status : Int) = coroutineScope {
+        database.packDao().updatePackStatus(packId, status)
+    }
+
+    suspend fun savePack(packId : Int, stickers : List<Sticker>) = coroutineScope {
         database.runInTransaction {
             database.stickerDao().insertStickers(stickers)
-
+            database.packDao().updatePackStatus(packId, PackStatus.SAVED)
         }
     }
 
-    suspend fun savePack(packId : Int) : Result<PackObject> {
-        val pack = getPack(packId)
-        val stickers = datasource.getStickers(packId)
-        if(pack is Result.Success && stickers is Result.Success){
-            database.stickerDao().insertStickers(stickers.data)
-            val packObject = PackObject.create(pack.data, stickers.data)
-            return Result.Success(packObject)
+    suspend fun removePack(packId: Int) = coroutineScope {
+        database.runInTransaction {
+            val pack = database.packDao().getPackById(packId)
+            pack?.let {
+                if(it.updated){
+                    database.packDao().deletePackById(it.id)
+                }
+                else{
+                    database.packDao().updatePackStatus(it.id, PackStatus.NOTSAVED)
+                }
+            }
         }
-        return Result.Error(IOException("Unable to get pack stickers"))
     }
 
-    suspend fun getStickers(packId : Int) : Result<List<Sticker>> {
-        val result = withContext(Dispatchers.IO) {database.stickerDao().getStickers(packId)}
-        if(result.isEmpty()){
-            return datasource.getStickers(packId)
+    suspend fun getStickers(packId : Int, forceNetwork : Boolean = false) : Result<List<Sticker>> = coroutineScope {
+        if(forceNetwork){
+            return@coroutineScope datasource.getStickers(packId)
         }
-        return Result.Success(result)
+        else{
+            val result = database.stickerDao().getStickers(packId)
+            if(result.isEmpty()){
+                return@coroutineScope datasource.getStickers(packId)
+            }
+            return@coroutineScope Result.Success(result)
+        }
     }
 
     fun getSavedPacks() : LiveData<List<Pack>> {
@@ -101,8 +112,7 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
             val result = datasource.searchPacks(searchText, pageSize, 0)
             when (result) {
                 is Result.Success -> {
-                    database.packDao().deleteNotSaved()
-                    database.packDao().insertPacks(result.data)
+                    database.packDao().addPacks(result.data, refresh = true)
                     networkState.postValue(NetworkState.SUCCESS)
                 }
                 is Result.Error -> {
