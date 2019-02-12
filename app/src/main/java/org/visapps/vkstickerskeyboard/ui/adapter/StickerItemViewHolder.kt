@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
 import org.visapps.vkstickerskeyboard.GlideRequests
 import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.data.models.Sticker
@@ -20,7 +21,7 @@ class StickerItemViewHolder(private val view: View, private val glide: GlideRequ
     fun bind(sticker : Sticker?) {
         this.sticker = sticker
         sticker?.let {
-            glide.load(StickerUrl(it.image, it.pack_id, it.id)).diskCacheStrategy(DiskCacheStrategy.RESOURCE).fitCenter().into(image)
+            glide.load(StickerUrl(it.image, it.pack_id, it.id)).diskCacheStrategy(DiskCacheStrategy.ALL).onlyRetrieveFromCache(true).fitCenter().into(image)
         }
     }
 

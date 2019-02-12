@@ -1,6 +1,7 @@
 package org.visapps.vkstickerskeyboard.data.backend
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -31,12 +32,12 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
         return PackStatus.NOTSAVED
     }
 
-    suspend fun getPack(packId: Int) : Result<Pack> = coroutineScope{
-        val result = database.packDao().getPackById(packId)
+    suspend fun getPack(packId: Int) : Result<Pack> {
+        val result = withContext(Dispatchers.IO) { database.packDao().getPackById(packId)}
         result?.let {
-            return@coroutineScope Result.Success(it)
+            return Result.Success(it)
         }
-        return@coroutineScope Result.Error(IOException("No pack found"))
+        return Result.Error(IOException("No pack found"))
     }
 
     suspend fun updatePackStatus(packId: Int, status : Int) = coroutineScope {
@@ -55,25 +56,26 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
             val pack = database.packDao().getPackById(packId)
             pack?.let {
                 if(it.updated){
-                    database.packDao().deletePackById(it.id)
+                    database.packDao().updatePackStatus(it.id, PackStatus.NOTSAVED)
                 }
                 else{
-                    database.packDao().updatePackStatus(it.id, PackStatus.NOTSAVED)
+                    database.packDao().deletePackById(it.id)
                 }
             }
         }
     }
 
-    suspend fun getStickers(packId : Int, forceNetwork : Boolean = false) : Result<List<Sticker>> = coroutineScope {
+    suspend fun getStickers(packId : Int, forceNetwork : Boolean = false) : Result<List<Sticker>> {
         if(forceNetwork){
-            return@coroutineScope datasource.getStickers(packId)
+            Log.i("VAsily", "here")
+            return datasource.getStickers(packId)
         }
         else{
-            val result = database.stickerDao().getStickers(packId)
+            val result = withContext(Dispatchers.IO){database.stickerDao().getStickers(packId)}
             if(result.isEmpty()){
-                return@coroutineScope datasource.getStickers(packId)
+                return datasource.getStickers(packId)
             }
-            return@coroutineScope Result.Success(result)
+            return Result.Success(result)
         }
     }
 

@@ -80,6 +80,7 @@ class AllStickersFragment : Fragment() {
         }
         packs_list.adapter = adapter
         viewModel.posts.observe(this, Observer<PagedList<Pack>> {
+            Log.i("Vasily", "changed")
             adapter.submitList(it)
         })
         viewModel.networkState.observe(this, Observer {

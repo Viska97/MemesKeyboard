@@ -27,7 +27,7 @@ abstract class PackDao {
     @Query("SELECT * FROM packs WHERE status = 2")
     abstract fun getSavedPacks() : LiveData<List<Pack>>
 
-    @Query("UPDATE packs SET updated = 0")
+    @Query("UPDATE packs SET updated = 1")
     abstract fun invalidateSavedPacks()
 
     @Query("UPDATE packs SET status = :status WHERE id = :packId")
@@ -44,21 +44,15 @@ abstract class PackDao {
 
     @Transaction
     open fun addPacks(packs: List<Pack>, refresh : Boolean = false) {
-        val updateList = ArrayList<Pack>()
+        val savedPacks = ArrayList<Pack>()
+        savedPacks.addAll(packs)
+        savedPacks.forEach { it.status = PackStatus.SAVED }
         if(refresh) {
             deleteNotSavedPacks()
             invalidateSavedPacks()
         }
-        val insertResult = insertPacks(packs)
-        for (i in 0 until insertResult.size) {
-            if (insertResult[i] == -1L) {
-                updateList.add(packs.get(i))
-            }
-        }
-        if (!updateList.isEmpty()) {
-            updateList.forEach { it.status = PackStatus.SAVED }
-            updatePacks(updateList)
-        }
+        updatePacks(savedPacks)
+        insertPacks(packs)
     }
 
 }

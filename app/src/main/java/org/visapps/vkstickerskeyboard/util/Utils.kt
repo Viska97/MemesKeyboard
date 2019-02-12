@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.paging.*
 import java.io.IOException
 import android.util.DisplayMetrics
-
+import android.util.Log
 
 
 data class ListStatus<T>(
@@ -20,6 +20,7 @@ suspend fun <T : Any> safeApiCall(call: suspend () -> Result<T>): Result<T> {
     return try {
         call()
     } catch (e: Exception) {
+        Log.i("Vasily", e.message)
         Result.Error(IOException(e))
     }
 }

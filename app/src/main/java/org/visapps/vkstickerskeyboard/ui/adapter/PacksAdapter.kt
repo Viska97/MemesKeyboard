@@ -1,5 +1,6 @@
 package org.visapps.vkstickerskeyboard.ui.adapter
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -76,10 +77,13 @@ class PacksAdapter(private val glide: GlideRequests, private val reloadCallback:
             override fun areContentsTheSame(oldItem: Pack, newItem: Pack): Boolean =
                 oldItem.id == newItem.id
 
-            override fun areItemsTheSame(oldItem: Pack, newItem: Pack): Boolean =
-                oldItem == newItem
+            override fun areItemsTheSame(oldItem: Pack, newItem: Pack): Boolean {
+                //Log.i("Vasily", "areItemsTheSame")
+                return oldItem.status == newItem.status && oldItem.updated == newItem.updated && oldItem.logo == newItem.logo && oldItem.name == newItem.name
+            }
 
             override fun getChangePayload(oldItem: Pack, newItem: Pack): Any? {
+                Log.i("Vasily", "Change Payload")
                 return if (sameExceptStatus(oldItem, newItem)) {
                     mutableListOf(newItem.status)
                 } else {

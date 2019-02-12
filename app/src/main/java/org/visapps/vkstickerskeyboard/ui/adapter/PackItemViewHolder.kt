@@ -8,6 +8,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import org.visapps.vkstickerskeyboard.GlideRequests
@@ -22,22 +23,23 @@ class PackItemViewHolder(private val view: View, private val glide: GlideRequest
     private val logo = view.findViewById<ImageView>(R.id.logo)
     private val name = view.findViewById<TextView>(R.id.name)
     private val statusProgress = view.findViewById<ProgressBar>(R.id.status_progress)
-    private val statusButton  = view.findViewById<ImageButton>(R.id.status_button)
+    private val statusButton = view.findViewById<ImageButton>(R.id.status_button)
     private var pack: Pack? = null
 
     init {
         view.setOnClickListener {
-            pack?.let{
+            pack?.let {
                 val bundle = Bundle()
                 bundle.putInt("packId", it.id)
                 Navigation.findNavController(view).navigate(R.id.action_allstickers_to_pack, bundle)
             }
         }
         statusButton.setOnClickListener {
-            pack?.let{
-                it.status = PackStatus.INPROGRESS
-                bind(it)
-                val workRequest = OneTimeWorkRequest.Builder(SavePackWorker::class.java).build()
+            pack?.let {
+                //it.status = PackStatus.INPROGRESS
+                //bind(it)
+                val data = Data.Builder().putInt("packId", it.id).build()
+                val workRequest = OneTimeWorkRequest.Builder(SavePackWorker::class.java).setInputData(data).build()
                 WorkManager.getInstance().enqueue(workRequest)
             }
         }
@@ -45,12 +47,11 @@ class PackItemViewHolder(private val view: View, private val glide: GlideRequest
 
     fun bind(pack: Pack?) {
         this.pack = pack
-        pack?.let{
+        pack?.let {
             name.text = it.name
-            if(it.status == PackStatus.SAVED){
+            if (it.status == PackStatus.SAVED) {
                 statusButton.setImageDrawable(ContextCompat.getDrawable(view.context, R.drawable.ic_check_black_24dp))
-            }
-            else{
+            } else {
                 statusButton.setImageDrawable(ContextCompat.getDrawable(view.context, R.drawable.ic_add_black_24dp))
             }
             statusButton.visibility = toVisibility(it.status == PackStatus.NOTSAVED || it.status == PackStatus.SAVED)
@@ -62,12 +63,11 @@ class PackItemViewHolder(private val view: View, private val glide: GlideRequest
     }
 
     fun updateStatus(newStatus: Int) {
-        pack?.let{
+        pack?.let {
             it.status = newStatus
-            if(it.status == PackStatus.SAVED){
+            if (it.status == PackStatus.SAVED) {
                 statusButton.setImageDrawable(ContextCompat.getDrawable(view.context, R.drawable.ic_check_black_24dp))
-            }
-            else{
+            } else {
                 statusButton.setImageDrawable(ContextCompat.getDrawable(view.context, R.drawable.ic_add_black_24dp))
             }
             statusButton.visibility = toVisibility(it.status == PackStatus.NOTSAVED || it.status == PackStatus.SAVED)
