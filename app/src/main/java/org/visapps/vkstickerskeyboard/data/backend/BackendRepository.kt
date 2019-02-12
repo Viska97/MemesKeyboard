@@ -56,10 +56,10 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
             val pack = database.packDao().getPackById(packId)
             pack?.let {
                 if(it.updated){
-                    database.packDao().updatePackStatus(it.id, PackStatus.NOTSAVED)
+                    database.packDao().deletePackById(it.id)
                 }
                 else{
-                    database.packDao().deletePackById(it.id)
+                    database.packDao().updatePackStatus(it.id, PackStatus.NOTSAVED)
                 }
             }
         }
@@ -67,7 +67,6 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
 
     suspend fun getStickers(packId : Int, forceNetwork : Boolean = false) : Result<List<Sticker>> {
         if(forceNetwork){
-            Log.i("VAsily", "here")
             return datasource.getStickers(packId)
         }
         else{
@@ -114,7 +113,12 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
             val result = datasource.searchPacks(searchText, pageSize, 0)
             when (result) {
                 is Result.Success -> {
-                    database.packDao().addPacks(result.data, refresh = true)
+                    database.runInTransaction {
+                        database.packDao().deleteNotSavedPacks()
+                        database.packDao().invalidatePacks()
+                        database.packDao().insertPacks(result.data)
+                        database.packDao().updateSavedPacks(result.data.map { it.id })
+                    }
                     networkState.postValue(NetworkState.SUCCESS)
                 }
                 is Result.Error -> {

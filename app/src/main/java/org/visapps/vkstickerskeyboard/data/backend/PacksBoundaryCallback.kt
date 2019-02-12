@@ -38,11 +38,14 @@ class PacksBoundaryCallback(
         GlobalScope.launch(Dispatchers.IO) {
             networkState.postValue(NetworkState.RUNNING)
             delay(1000L)
-            val offset = database.packDao().packsCount()
+            val offset = database.packDao().updatedPacksCount()
             val result = dataSource.searchPacks(searchText, pageSize, offset)
             when(result){
                 is Result.Success -> {
-                    database.packDao().addPacks(result.data)
+                    database.runInTransaction {
+                        database.packDao().insertPacks(result.data)
+                        database.packDao().updateSavedPacks(result.data.map { it.id })
+                    }
                     networkState.postValue(NetworkState.SUCCESS)
                 }
                 is Result.Error -> {

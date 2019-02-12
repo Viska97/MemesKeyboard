@@ -20,7 +20,6 @@ suspend fun <T : Any> safeApiCall(call: suspend () -> Result<T>): Result<T> {
     return try {
         call()
     } catch (e: Exception) {
-        Log.i("Vasily", e.message)
         Result.Error(IOException(e))
     }
 }
