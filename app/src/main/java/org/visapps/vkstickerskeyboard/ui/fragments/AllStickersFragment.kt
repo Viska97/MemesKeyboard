@@ -79,8 +79,8 @@ class AllStickersFragment : Fragment() {
             viewModel.reload()
         }
         packs_list.adapter = adapter
+        packs_list.itemAnimator = null
         viewModel.posts.observe(this, Observer<PagedList<Pack>> {
-            Log.i("Vasily", "changed")
             adapter.submitList(it)
         })
         viewModel.networkState.observe(this, Observer {

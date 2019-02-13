@@ -89,7 +89,7 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
             refresh(searchText, pageSize)
         }
         val config = PagedList.Config.Builder().setPageSize(pageSize).setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(pageSize).setPrefetchDistance(2).build()
+            .setInitialLoadSizeHint(pageSize).setPrefetchDistance(5).build()
         val livePagedList = database.packDao().searchPacks("%$searchText%")
             .toLiveData(config = config, boundaryCallback = boundaryCallback)
         return ListStatus(

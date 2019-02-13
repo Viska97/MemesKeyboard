@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -37,23 +38,19 @@ class SavePackWorker(context: Context, params: WorkerParameters) : Worker(contex
         repository.updatePackStatus(packId, PackStatus.INPROGRESS)
         Log.i("Vasily", "Status updated")
         val stickers = repository.getStickers(packId, forceNetwork = true)
-        when(stickers){
-            is org.visapps.vkstickerskeyboard.util.Result.Success -> {
-                Log.i("Vasily", "Started glide")
-                stickers.data.map {sticker ->
-                    launch {
-                        glide.load(StickerUrl(sticker.image, sticker.pack_id, sticker.id)).diskCacheStrategy(DiskCacheStrategy.ALL).submit().get()
-                        Log.i("Vasily", "Download complete ${sticker.id}")
-                    }
-                }.forEach { it.join() }
-                repository.savePack(packId, stickers.data)
-                Log.i("Vasily", "Pack saved")
-                return@runBlocking Result.success()}
-            is org.visapps.vkstickerskeyboard.util.Result.Error ->  {
-                Log.i("Vasily", "Error, need retry")
-                repository.updatePackStatus(packId, PackStatus.NOTSAVED)
-            return@runBlocking Result.failure()}
+        if(stickers is StickersResult.Success){
+            Log.i("Vasily", "Started glide")
+            stickers.data.map {sticker ->
+                launch(Dispatchers.IO) {
+                    glide.load(StickerUrl(sticker.image, sticker.pack_id, sticker.id)).priority(Priority.HIGH).diskCacheStrategy(DiskCacheStrategy.DATA).submit().get()
+                    Log.i("Vasily", "Download complete ${sticker.id}")
+                }
+            }.forEach { it.join() }
+            repository.savePack(packId, stickers.data)
+            Log.i("Vasily", "Pack saved")
+            return@runBlocking Result.success()
         }
+        return@runBlocking Result.success()
     }
 
     private fun removePack(packId: Int, repository: BackendRepository): Result = runBlocking {

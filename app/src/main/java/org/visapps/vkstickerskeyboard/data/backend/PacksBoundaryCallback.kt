@@ -37,7 +37,6 @@ class PacksBoundaryCallback(
         isRequestInProgress = true
         GlobalScope.launch(Dispatchers.IO) {
             networkState.postValue(NetworkState.RUNNING)
-            delay(1000L)
             val offset = database.packDao().updatedPacksCount()
             val result = dataSource.searchPacks(searchText, pageSize, offset)
             when(result){
