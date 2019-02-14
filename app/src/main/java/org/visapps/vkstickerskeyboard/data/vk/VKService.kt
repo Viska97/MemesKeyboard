@@ -15,6 +15,7 @@ interface VKService {
                          @Query("count") count : Int,
                          @Query("filter") filter : String,
                          @Query("extended") extended : Boolean,
+                         @Query("start_message_id") start_message_id : Int?,
                          @Query("fields") fields : String)
             : Deferred<Response<ConversationsResponse>>
 }

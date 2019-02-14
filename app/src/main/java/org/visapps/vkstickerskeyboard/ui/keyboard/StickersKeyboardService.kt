@@ -10,6 +10,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import kotlinx.android.synthetic.main.keyboard_dialogs.view.*
+import kotlinx.android.synthetic.main.keyboard_login.view.*
 import kotlinx.android.synthetic.main.keyboard_main.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
@@ -17,19 +19,12 @@ import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.ui.activity.AuthActivity
 import org.visapps.vkstickerskeyboard.ui.adapter.ChatAdapter
 
-class StickersKeyboardService : InputMethodService(), LifecycleOwner {
+class StickersKeyboardService : LifecycleKeyboardService() {
 
-
-    val registry = LifecycleRegistry(this)
     private lateinit var view : View
     private lateinit var viewModel : StickersKeyboardViewModel
 
     private lateinit var adapter : ChatAdapter
-
-
-    override fun getLifecycle(): Lifecycle {
-        return registry
-    }
 
     override fun onCreate() {
         setTheme(R.style.AppTheme)
@@ -47,29 +42,20 @@ class StickersKeyboardService : InputMethodService(), LifecycleOwner {
         view.chats.adapter = adapter
         viewModel = StickersKeyboardViewModel()
         registerObservers()
-        registry.markState(Lifecycle.State.CREATED)
         return view
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
-        registry.markState(Lifecycle.State.RESUMED)
         viewModel.loadState()
-        Log.i("Vasily", "Start")
         super.onStartInputView(info, restarting)
     }
 
     override fun onFinishInput() {
-        Log.i("Vasily", "Stop")
         super.onFinishInput()
     }
 
     override fun onDestroy() {
-        onFinishInput()
-        registry.markState(Lifecycle.State.DESTROYED)
-        Log.i("Vasily", "Destroy")
     }
-
-
 
     private fun registerObservers() {
         viewModel.loginStatus.observe(this, Observer { isLoggedIn ->

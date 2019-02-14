@@ -7,7 +7,7 @@ import androidx.lifecycle.*
 
 abstract class LifecycleKeyboardService : InputMethodService(), LifecycleOwner {
 
-    val registry = LifecycleRegistry(this)
+    private val registry = LifecycleRegistry(this)
 
     override fun onCreate() {
         registry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)

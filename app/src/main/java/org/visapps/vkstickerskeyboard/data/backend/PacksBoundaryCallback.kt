@@ -1,6 +1,5 @@
 package org.visapps.vkstickerskeyboard.data.backend
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
 import kotlinx.coroutines.*

@@ -13,7 +13,7 @@ import org.visapps.vkstickerskeyboard.data.vk.VKRepository
 import org.visapps.vkstickerskeyboard.util.Result
 import kotlin.coroutines.CoroutineContext
 
-class StickersKeyboardViewModel : ViewModel(), CoroutineScope {
+class StickersKeyboardViewModel(private val repository : VKRepository) : ViewModel(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
@@ -52,6 +52,10 @@ class StickersKeyboardViewModel : ViewModel(), CoroutineScope {
             }
             loadingState.postValue(false)
         }
+
+    }
+
+    private fun getState() {
 
     }
 }
