@@ -11,8 +11,8 @@ data class Dialog(
     var peerId: Int,
     @ColumnInfo(name = "last_message_id")
     var last_message_id: Int,
-    @ColumnInfo(name = "title")
-    var title : String,
+    @ColumnInfo(name = "name")
+    var name : String,
     @ColumnInfo(name = "allowed")
     var allowed : Boolean,
     @ColumnInfo(name = "photo")

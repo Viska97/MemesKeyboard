@@ -37,6 +37,16 @@ class CanWrite {
 
 }
 
+class ChatSettings {
+
+    @SerializedName("title")
+    @Expose
+    var title : String? = null
+    @SerializedName("photo")
+    @Expose
+    var photo : Photo? = null
+}
+
 class Conversation {
 
     @SerializedName("peer")
@@ -55,6 +65,19 @@ class Conversation {
     @Expose
     var canWrite: CanWrite? = null
 
+}
+
+class Group {
+
+    @SerializedName("id")
+    @Expose
+    var id : Int? = null
+    @SerializedName("name")
+    @Expose
+    var name : String? = null
+    @SerializedName("photo_max")
+    @Expose
+    var photo_max : String? = null
 }
 
 class Image {
@@ -151,6 +174,19 @@ class Peer {
 
 }
 
+class Photo {
+
+    @SerializedName("photo_50")
+    @Expose
+    var photo_50 : String? = null
+    @SerializedName("photo_100")
+    @Expose
+    var photo_100 : String? = null
+    @SerializedName("photo_200")
+    @Expose
+    var photo_200 : String? = null
+}
+
 class Profile {
 
     @SerializedName("id")
@@ -185,6 +221,9 @@ class Response {
     @SerializedName("profiles")
     @Expose
     var profiles: List<Profile>? = null
+    @SerializedName("groups")
+    @Expose
+    var groups : List<Group>? = null
 
 }
 

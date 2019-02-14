@@ -32,6 +32,10 @@ class DialogsBoundaryCallback(
         loadDialogs(itemAtEnd.last_message_id)
     }
 
+    fun reload() {
+        loadDialogs(null)
+    }
+
     private fun loadDialogs(start_message_id: Int?) {
         if (isRequestInProgress) return
         isRequestInProgress = true

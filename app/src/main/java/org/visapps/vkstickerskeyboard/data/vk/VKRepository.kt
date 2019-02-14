@@ -4,6 +4,9 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKSdk
@@ -34,7 +37,26 @@ class VKRepository private constructor(private val dataSource : VKDataSource, pr
     }
 
     fun getDialogs(pageSize: Int) : ListStatus<Dialog> {
-
+        val boundaryCallback = DialogsBoundaryCallback(pageSize, dataSource, database, this::handleLogout)
+        val refreshTrigger = MutableLiveData<Unit>()
+        val refreshState = Transformations.switchMap(refreshTrigger) {
+            refreshDialogs(pageSize)
+        }
+        val config = PagedList.Config.Builder().setPageSize(pageSize).setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(pageSize).setPrefetchDistance(5).build()
+        val livePagedList = database.dialogDao().getDialogs()
+            .toLiveData(config = config, boundaryCallback = boundaryCallback)
+        return ListStatus(
+            pagedList = livePagedList,
+            networkState = boundaryCallback.networkState,
+            retry = {
+                boundaryCallback.reload()
+            },
+            refresh = {
+                refreshTrigger.value = null
+            },
+            refreshState = refreshState
+        )
     }
 
     private fun refreshDialogs(pageSize: Int) : LiveData<Int> {
@@ -95,7 +117,29 @@ class VKRepository private constructor(private val dataSource : VKDataSource, pr
         }
 
         fun processDialogs(conversations : ConversationsResponse) : List<Dialog> {
-            return Collections.emptyList()
+            val result = ArrayList<Dialog>()
+            conversations.response?.items?.forEach {item ->
+                val peerId = item.conversation?.peer?.id
+                val last_message_id = item.conversation?.lastMessageId
+                val allowed = item.conversation?.canWrite?.allowed
+                var name : String? = null
+                var photo : String? = null
+                when(item.conversation?.peer?.type){
+                    "user" -> {
+
+                    }
+                    "group" -> {
+
+                    }
+                    "chat" -> {
+
+                    }
+                }
+                if(listOf(peerId,last_message_id,allowed,name,photo).any { it !=null }){
+                    result.add(Dialog(peerId!!,last_message_id!!,name!!, allowed!!,photo!!))
+                }
+            }
+            return result
         }
     }
 
