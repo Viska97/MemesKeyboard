@@ -120,23 +120,29 @@ class VKRepository private constructor(private val dataSource : VKDataSource, pr
             val result = ArrayList<Dialog>()
             conversations.response?.items?.forEach {item ->
                 val peerId = item.conversation?.peer?.id
-                val last_message_id = item.conversation?.lastMessageId
+                val localId = item.conversation?.peer?.localId
+                val lastMessageId = item.conversation?.lastMessageId
                 val allowed = item.conversation?.canWrite?.allowed
                 var name : String? = null
                 var photo : String? = null
                 when(item.conversation?.peer?.type){
                     "user" -> {
-
+                        val profile = conversations.response?.profiles?.find { it.id == peerId}
+                        name = profile?.firstName + profile?.lastName
+                        photo = profile?.photomax
                     }
                     "group" -> {
-
+                        val group = conversations.response?.groups?.find { it.id == localId }
+                        name = group?.name
+                        photo = group?.photo_max
                     }
                     "chat" -> {
-
+                        name = item.conversation?.chatSettings?.title
+                        photo = item.conversation?.chatSettings?.photo?.photo_200
                     }
                 }
-                if(listOf(peerId,last_message_id,allowed,name,photo).any { it !=null }){
-                    result.add(Dialog(peerId!!,last_message_id!!,name!!, allowed!!,photo!!))
+                if(listOf(peerId,lastMessageId,allowed,name,photo).any { it !=null }){
+                    result.add(Dialog(peerId!!,lastMessageId!!,name!!, allowed!!,photo!!))
                 }
             }
             return result

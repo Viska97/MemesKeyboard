@@ -64,6 +64,9 @@ class Conversation {
     @SerializedName("can_write")
     @Expose
     var canWrite: CanWrite? = null
+    @SerializedName("chat_settings")
+    @Expose
+    var chatSettings : ChatSettings? = null
 
 }
 
