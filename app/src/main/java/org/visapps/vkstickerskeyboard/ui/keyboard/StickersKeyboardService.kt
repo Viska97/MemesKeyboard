@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.Observer
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.keyboard_dialogs.view.*
 import kotlinx.android.synthetic.main.keyboard_login.view.*
@@ -16,8 +17,11 @@ import kotlinx.android.synthetic.main.keyboard_main.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
 import org.visapps.vkstickerskeyboard.R
+import org.visapps.vkstickerskeyboard.data.models.Dialog
 import org.visapps.vkstickerskeyboard.ui.activity.AuthActivity
 import org.visapps.vkstickerskeyboard.ui.adapter.ChatAdapter
+import org.visapps.vkstickerskeyboard.util.KeyboardState
+import org.visapps.vkstickerskeyboard.util.switchVisibility
 
 class StickersKeyboardService : LifecycleKeyboardService() {
 
@@ -46,7 +50,7 @@ class StickersKeyboardService : LifecycleKeyboardService() {
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
-        viewModel.loadState()
+        //viewModel.loadState()
         super.onStartInputView(info, restarting)
     }
 
@@ -58,39 +62,16 @@ class StickersKeyboardService : LifecycleKeyboardService() {
     }
 
     private fun registerObservers() {
-        viewModel.loginStatus.observe(this, Observer { isLoggedIn ->
-            isLoggedIn?.let {
-                if (isLoggedIn) {
-                    view.loginbutton.visibility = View.GONE
-                    view.mainview.visibility = View.VISIBLE
-                } else {
-                    view.loginbutton.visibility = View.VISIBLE
-                    view.mainview.visibility = View.GONE
-                }
-            }
+        viewModel.keyboardState.observe(this, Observer<Int> {
+            view.login.visibility = switchVisibility(it == KeyboardState.NOTAUTHENTICATED)
+            view.dialogs.visibility = switchVisibility(it == KeyboardState.DIALOGS)
         })
-        viewModel.chats.observe(this, Observer { chats ->
-            if(chats == null){
-                adapter.clear()
-            }
-            else{
-                adapter.updateChats(chats)
-            }
-            adapter.notifyDataSetChanged()
+        viewModel.networkState.observe(this, Observer<Int> {
+
         })
-        viewModel.loadingState.observe(this, Observer { loading ->
-            loading?.let {
-                if (loading) {
-                    view.progress.visibility = View.VISIBLE
-                } else {
-                    view.progress.visibility = View.GONE
-                }
-            }
+        viewModel.dialogs.observe(this, Observer<PagedList<Dialog>> {
+
         })
-        viewModel.error.observe(this, Observer { error ->
-            error?.let {
-                Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
-            }
-        })
+
     }
 }

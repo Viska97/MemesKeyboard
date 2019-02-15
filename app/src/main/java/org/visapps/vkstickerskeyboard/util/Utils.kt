@@ -39,6 +39,14 @@ fun toVisibility(constraint : Boolean): Int {
     }
 }
 
+fun switchVisibility(constraint : Boolean): Int {
+    return if (constraint) {
+        View.VISIBLE
+    } else {
+        View.INVISIBLE
+    }
+}
+
 sealed class Result<out T: Any> {
     data class Success<out T : Any>(val data: T) : Result<T>()
     data class Error(val exception: Exception) : Result<Nothing>()
@@ -51,4 +59,10 @@ object NetworkState{
     const val RUNNING = 0
     const val SUCCESS = 1
     const val FAILED = 2
+}
+
+object KeyboardState{
+    const val NOTAUTHENTICATED = 0
+    const val DIALOGS = 1
+    const val STICKERS = 2
 }
