@@ -17,7 +17,9 @@ import kotlinx.android.synthetic.main.keyboard_main.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
 import org.visapps.vkstickerskeyboard.R
+import org.visapps.vkstickerskeyboard.data.backend.BackendRepository
 import org.visapps.vkstickerskeyboard.data.models.Dialog
+import org.visapps.vkstickerskeyboard.data.vk.VKRepository
 import org.visapps.vkstickerskeyboard.ui.activity.AuthActivity
 import org.visapps.vkstickerskeyboard.ui.adapter.ChatAdapter
 import org.visapps.vkstickerskeyboard.util.KeyboardState
@@ -44,7 +46,7 @@ class StickersKeyboardService : LifecycleKeyboardService() {
         view.chats.setHasFixedSize(true)
         adapter = ChatAdapter(this)
         view.chats.adapter = adapter
-        viewModel = StickersKeyboardViewModel()
+        viewModel = StickersKeyboardViewModel(VKRepository.get(this))
         registerObservers()
         return view
     }
