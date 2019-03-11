@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">VK Stickers Keyboard</string>
-    <string name="allstickers">Все стикеры</string>
-    <string name="savedstickers">Сохраненные стикеры</string>
+    <string name="app_name">VK Memes Keyboard</string>
+    <string name="all_packs">Все паки</string>
+    <string name="saved_packs">Сохраненные паки</string>
     <string name="account">Аккаунт</string>
     <string name="vklogin">Войти через ВК</string>
     <string name="reload">Перезагрузить</string>
     <string name="loadingerror">При загрузке данных произошла ошибка</string>
-    <string name="searchpacks">Поиск паков стикеров</string>
+    <string name="search_packs">Поиск паков</string>
 </resources>

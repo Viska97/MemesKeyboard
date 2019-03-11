@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">VK Stickers Keyboard</string>
-    <string name="allstickers">All stickers</string>
-    <string name="savedstickers">Saved stickers</string>
+    <string name="app_name">VK Memes Keyboard</string>
+    <string name="all_packs">All packs</string>
+    <string name="saved_packs">Saved packs</string>
     <string name="account">Account</string>
     <string name="vklogin">Login with VK account</string>
     <string name="title_activity_auth">Authentication</string>
@@ -10,10 +10,10 @@
     <string name="vkdialogs">VK Dialogs</string>
     <string name="reload">Reload</string>
     <string name="loadingerror">Error loading data</string>
-    <string name="searchpacks">Search sticker packs</string>
-    <string name="stickerpack">Sticker pack</string>
+    <string name="search_packs">Search packs</string>
+    <string name="memes_pack">Memes pack</string>
     <string name="nosavedpacksfound">No saved packs found</string>
+    <string name="failed_to_load_dialogs">Failed to load dialogs</string>
 
-
-    <integer name="com_vk_sdk_AppId">6761956</integer>
+    <integer name="com_vk_sdk_AppId">6895510</integer>
 </resources>

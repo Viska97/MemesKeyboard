@@ -2,19 +2,19 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_navigation"
-            app:startDestination="@id/navigation_allstickers">
+            app:startDestination="@id/navigation_allpacks">
 
-    <fragment android:id="@+id/navigation_allstickers"
-              android:name="org.visapps.vkstickerskeyboard.ui.fragments.AllStickersFragment"
-              android:label="@string/allstickers" tools:layout="@layout/all_stickers_fragment">
-        <action android:id="@+id/action_allstickers_to_pack" app:destination="@id/navigation_pack"/>
+    <fragment android:id="@+id/navigation_allpacks"
+              android:name="org.visapps.vkmemeskeyboard.ui.fragments.AllPacksFragment"
+              android:label="@string/all_packs" tools:layout="@layout/all_packs_fragment">
+        <action android:id="@+id/action_allpacks_to_pack" app:destination="@id/navigation_pack"/>
     </fragment>
-    <fragment android:id="@+id/navigation_savedstickers"
-              android:name="org.visapps.vkstickerskeyboard.ui.fragments.SavedStickersFragment"
-              android:label="@string/savedstickers" tools:layout="@layout/saved_stickers_fragment"/>
+    <fragment android:id="@+id/navigation_savedpacks"
+              android:name="org.visapps.vkmemeskeyboard.ui.fragments.SavedPacksFragment"
+              android:label="@string/saved_packs" tools:layout="@layout/saved_packs_fragment"/>
     <fragment android:id="@+id/navigation_account"
-              android:name="org.visapps.vkstickerskeyboard.ui.fragments.AccountFragment"
+              android:name="org.visapps.vkmemeskeyboard.ui.fragments.AccountFragment"
               android:label="@string/account" tools:layout="@layout/account_fragment"/>
-    <fragment android:id="@+id/navigation_pack" android:name="org.visapps.vkstickerskeyboard.ui.fragments.PackFragment"
-              android:label="@string/stickerpack" tools:layout="@layout/pack_fragment"/>
+    <fragment android:id="@+id/navigation_pack" android:name="org.visapps.vkmemeskeyboard.ui.fragments.PackFragment"
+              android:label="@string/memes_pack" tools:layout="@layout/pack_fragment"/>
 </navigation>

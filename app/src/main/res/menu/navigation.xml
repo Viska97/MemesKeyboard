@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-            android:id="@+id/navigation_allstickers"
+            android:id="@+id/navigation_allpacks"
             android:icon="@drawable/ic_sentiment_very_satisfied_black_24dp"
-            android:title="@string/allstickers"/>
+            android:title="@string/all_packs"/>
 
     <item
-            android:id="@+id/navigation_savedstickers"
+            android:id="@+id/navigation_savedpacks"
             android:icon="@drawable/ic_dashboard_black_24dp"
-            android:title="@string/savedstickers"/>
+            android:title="@string/saved_packs"/>
 
     <item
             android:id="@+id/navigation_account"
