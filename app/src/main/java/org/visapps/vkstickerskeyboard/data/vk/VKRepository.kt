@@ -1,7 +1,6 @@
 package org.visapps.vkstickerskeyboard.data.vk
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -13,19 +12,15 @@ import com.vk.sdk.VKSdk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkstickerskeyboard.data.database.AppDatabase
-import org.visapps.vkstickerskeyboard.data.models.Chat
 import org.visapps.vkstickerskeyboard.data.models.Dialog
 import org.visapps.vkstickerskeyboard.util.ListStatus
 import org.visapps.vkstickerskeyboard.util.NetworkState
 import org.visapps.vkstickerskeyboard.util.Result
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
-import java.lang.Exception
 import java.util.*
 
 class VKRepository private constructor(private val dataSource : VKDataSource, private val database : AppDatabase) {

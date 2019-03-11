@@ -8,7 +8,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.visapps.vkstickerskeyboard.data.database.AppDatabase
 import org.visapps.vkstickerskeyboard.data.models.Dialog
-import org.visapps.vkstickerskeyboard.data.models.Pack
 import org.visapps.vkstickerskeyboard.util.NetworkState
 import org.visapps.vkstickerskeyboard.util.Result
 

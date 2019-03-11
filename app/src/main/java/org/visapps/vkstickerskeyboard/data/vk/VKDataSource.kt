@@ -1,6 +1,5 @@
 package org.visapps.vkstickerskeyboard.data.vk
 
-import org.visapps.vkstickerskeyboard.util.NotAuthenticatedException
 import org.visapps.vkstickerskeyboard.util.Result
 import org.visapps.vkstickerskeyboard.util.safeApiCall
 import java.io.IOException

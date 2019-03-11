@@ -1,7 +1,6 @@
 package org.visapps.vkstickerskeyboard.data.models
 
 import androidx.room.ColumnInfo
-import androidx.room.PrimaryKey
 import androidx.room.Relation
 
 data class PackObject(

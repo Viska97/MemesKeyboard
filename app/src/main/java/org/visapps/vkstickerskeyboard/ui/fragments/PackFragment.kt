@@ -1,20 +1,19 @@
 package org.visapps.vkstickerskeyboard.ui.fragments
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.pack_fragment.*
 import kotlinx.android.synthetic.main.pack_fragment.view.*
 import org.visapps.vkstickerskeyboard.GlideApp
-
 import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.data.models.Pack
 import org.visapps.vkstickerskeyboard.data.models.Sticker

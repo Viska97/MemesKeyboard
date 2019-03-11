@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
 import androidx.room.*
 import org.visapps.vkstickerskeyboard.data.models.Pack
-import org.visapps.vkstickerskeyboard.data.models.PackStatus
 
 @Dao
 interface PackDao {

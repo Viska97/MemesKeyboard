@@ -5,17 +5,19 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import org.visapps.vkstickerskeyboard.data.backend.BackendRepository
 import org.visapps.vkstickerskeyboard.data.vk.VKRepository
 import org.visapps.vkstickerskeyboard.util.KeyboardState
 import kotlin.coroutines.CoroutineContext
 
-class StickersKeyboardViewModel(private val repository : VKRepository) : ViewModel(), CoroutineScope {
+class StickersKeyboardViewModel(backendRepository: BackendRepository, vkRepository : VKRepository)
+    : ViewModel(), CoroutineScope {
 
     override val coroutineContext: CoroutineContext
         get() = job + Dispatchers.Main
 
-    private val authStatus = repository.authStatus
-    val status = repository.getDialogs(20)
+    private val authStatus = vkRepository.authStatus
+    val status = vkRepository.getDialogs(20)
 
     val keyboardState = MediatorLiveData<Int>()
     val dialogs = status.pagedList
@@ -48,7 +50,7 @@ class StickersKeyboardViewModel(private val repository : VKRepository) : ViewMod
         status.refresh.invoke()
     }
 
-    fun reload() {
+    fun reloadDialogs() {
         status.retry.invoke()
     }
 }

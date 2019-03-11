@@ -1,6 +1,5 @@
 package org.visapps.vkstickerskeyboard.data.backend
 
-import android.util.Log
 import org.visapps.vkstickerskeyboard.data.models.Pack
 import org.visapps.vkstickerskeyboard.data.models.Sticker
 import org.visapps.vkstickerskeyboard.util.Result

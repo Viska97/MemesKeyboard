@@ -1,14 +1,12 @@
 package org.visapps.vkstickerskeyboard.ui.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.chat_item.view.*
 import org.visapps.vkstickerskeyboard.GlideApp
-
 import org.visapps.vkstickerskeyboard.R
 import org.visapps.vkstickerskeyboard.data.models.Chat
 

@@ -22,6 +22,7 @@ import org.visapps.vkstickerskeyboard.data.models.Dialog
 import org.visapps.vkstickerskeyboard.data.vk.VKRepository
 import org.visapps.vkstickerskeyboard.ui.activity.AuthActivity
 import org.visapps.vkstickerskeyboard.ui.adapter.ChatAdapter
+import org.visapps.vkstickerskeyboard.util.InjectorUtils
 import org.visapps.vkstickerskeyboard.util.KeyboardState
 import org.visapps.vkstickerskeyboard.util.switchVisibility
 
@@ -46,7 +47,7 @@ class StickersKeyboardService : LifecycleKeyboardService() {
         view.chats.setHasFixedSize(true)
         adapter = ChatAdapter(this)
         view.chats.adapter = adapter
-        viewModel = StickersKeyboardViewModel(VKRepository.get(this))
+        viewModel = InjectorUtils.getStickersKeyboardViewModel(this)
         registerObservers()
         return view
     }
@@ -61,6 +62,7 @@ class StickersKeyboardService : LifecycleKeyboardService() {
     }
 
     override fun onDestroy() {
+
     }
 
     private fun registerObservers() {

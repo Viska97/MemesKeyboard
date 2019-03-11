@@ -2,7 +2,9 @@ package org.visapps.vkstickerskeyboard.data.backend
 
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.visapps.vkstickerskeyboard.data.database.AppDatabase
 import org.visapps.vkstickerskeyboard.data.models.Pack
 import org.visapps.vkstickerskeyboard.util.NetworkState

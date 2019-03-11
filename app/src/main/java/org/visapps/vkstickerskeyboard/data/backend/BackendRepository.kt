@@ -32,26 +32,26 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
         return PackStatus.NOTSAVED
     }
 
-    suspend fun getPack(packId: Int) : Result<Pack> {
-        val result = withContext(Dispatchers.IO) { database.packDao().getPackById(packId)}
+    suspend fun getPack(packId: Int) : Result<Pack> = withContext(Dispatchers.IO) {
+        val result = database.packDao().getPackById(packId)
         result?.let {
-            return Result.Success(it)
+            Result.Success(it)
         }
-        return Result.Error(IOException("No pack found"))
+        Result.Error(IOException("No pack found"))
     }
 
-    suspend fun updatePackStatus(packId: Int, status : Int) = coroutineScope {
+    suspend fun updatePackStatus(packId: Int, status : Int) = withContext(Dispatchers.IO) {
         database.packDao().updatePackStatus(packId, status)
     }
 
-    suspend fun savePack(packId : Int, stickers : List<Sticker>) = coroutineScope {
+    suspend fun savePack(packId : Int, stickers : List<Sticker>) = withContext(Dispatchers.IO) {
         database.runInTransaction {
             database.stickerDao().insertStickers(stickers)
             database.packDao().updatePackStatus(packId, PackStatus.SAVED)
         }
     }
 
-    suspend fun removePack(packId: Int) = coroutineScope {
+    suspend fun removePack(packId: Int) = withContext(Dispatchers.IO) {
         database.runInTransaction {
             val pack = database.packDao().getPackById(packId)
             pack?.let {
@@ -65,16 +65,16 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
         }
     }
 
-    suspend fun getStickers(packId : Int, forceNetwork : Boolean = false) : Result<List<Sticker>> {
+    suspend fun getStickers(packId : Int, forceNetwork : Boolean = false) : Result<List<Sticker>> = withContext(Dispatchers.IO){
         if(forceNetwork){
-            return datasource.getStickers(packId)
+            datasource.getStickers(packId)
         }
         else{
-            val result = withContext(Dispatchers.IO){database.stickerDao().getStickers(packId)}
+            val result = database.stickerDao().getStickers(packId)
             if(result.isEmpty()){
-                return datasource.getStickers(packId)
+                datasource.getStickers(packId)
             }
-            return Result.Success(result)
+            Result.Success(result)
         }
     }
 

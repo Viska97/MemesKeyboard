@@ -2,14 +2,26 @@ package org.visapps.vkstickerskeyboard.util
 
 import android.content.Context
 import org.visapps.vkstickerskeyboard.data.backend.BackendRepository
+import org.visapps.vkstickerskeyboard.data.vk.VKRepository
+import org.visapps.vkstickerskeyboard.ui.keyboard.StickersKeyboardViewModel
 import org.visapps.vkstickerskeyboard.ui.viewmodels.AllStickersViewModelFactory
 import org.visapps.vkstickerskeyboard.ui.viewmodels.PackViewModelFactory
 import org.visapps.vkstickerskeyboard.ui.viewmodels.SavedStickersViewModelFactory
 
 object InjectorUtils {
 
+    fun getVKRepository(context: Context) : VKRepository {
+        return VKRepository.get(context)
+    }
+
     fun getBackendRepository(context: Context) : BackendRepository {
         return BackendRepository.get(context)
+    }
+
+    fun getStickersKeyboardViewModel(context: Context) : StickersKeyboardViewModel {
+        val backendRepository = getBackendRepository(context)
+        val vkRepository = getVKRepository(context)
+        return StickersKeyboardViewModel(backendRepository, vkRepository)
     }
 
     fun provideAllStickersViewModelFactory(context: Context): AllStickersViewModelFactory {
