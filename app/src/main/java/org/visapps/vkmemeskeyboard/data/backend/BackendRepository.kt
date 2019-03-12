@@ -2,26 +2,24 @@ package org.visapps.vkmemeskeyboard.data.backend
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkmemeskeyboard.data.database.AppDatabase
+import org.visapps.vkmemeskeyboard.data.models.Meme
 import org.visapps.vkmemeskeyboard.data.models.Pack
 import org.visapps.vkmemeskeyboard.data.models.PackStatus
-import org.visapps.vkmemeskeyboard.data.models.Meme
-import org.visapps.vkmemeskeyboard.util.ListStatus
-import org.visapps.vkmemeskeyboard.util.NetworkState
 import org.visapps.vkmemeskeyboard.util.Result
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
-class BackendRepository(private val datasource: BackendDataSource, private val database: AppDatabase) {
+class BackendRepository(private val dataSource: BackendDataSource, private val database: AppDatabase) {
 
     suspend fun getPackStatus(packId: Int) : Int = withContext(Dispatchers.IO) {
         val status = database.packDao().getPackStatusById(packId)
@@ -66,12 +64,12 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
 
     suspend fun getStickers(packId : Int, forceNetwork : Boolean = false) : Result<List<Meme>> = withContext(Dispatchers.IO){
         if(forceNetwork){
-            return@withContext datasource.getStickers(packId)
+            return@withContext dataSource.getStickers(packId)
         }
         else{
             val result = database.stickerDao().getMemes(packId)
             if(result.isEmpty()){
-                datasource.getStickers(packId)
+                dataSource.getStickers(packId)
             }
             return@withContext Result.Success(result)
         }
@@ -81,52 +79,45 @@ class BackendRepository(private val datasource: BackendDataSource, private val d
         return database.packDao().getSavedPacks()
     }
 
-    fun searchPacks(searchText: String, pageSize: Int): ListStatus<Pack> {
-        val boundaryCallback =
-            PacksBoundaryCallback(searchText, pageSize, datasource, database)
-        val refreshTrigger = MutableLiveData<Unit>()
-        val refreshState = Transformations.switchMap(refreshTrigger) {
-            refresh(searchText, pageSize)
-        }
-        val config = PagedList.Config.Builder().setPageSize(pageSize).setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(pageSize).setPrefetchDistance(5).build()
-        val livePagedList = database.packDao().searchPacks("%$searchText%")
-            .toLiveData(config = config, boundaryCallback = boundaryCallback)
-        return ListStatus(
-            pagedList = livePagedList,
-            networkState = boundaryCallback.networkState,
-            retry = {
-                boundaryCallback.reload()
-            },
-            refresh = {
-                refreshTrigger.value = null
-            },
-            refreshState = refreshState
-        )
-    }
-
-    private fun refresh(searchText: String, pageSize: Int): LiveData<Int> {
-        val networkState = MutableLiveData<Int>()
-        networkState.postValue(NetworkState.RUNNING)
-        GlobalScope.launch(Dispatchers.IO) {
-            networkState.postValue(NetworkState.RUNNING)
-            val result = datasource.searchPacks(searchText, pageSize, 0)
-            when (result) {
-                is Result.Success -> {
-                    database.runInTransaction {
-                        database.packDao().deleteNotSavedPacks()
-                        database.packDao().invalidatePacks()
-                        database.packDao().insertPacks(result.data)
-                        database.packDao().updateSavedPacks(result.data.map { it.id })
-                    }
-                    networkState.postValue(NetworkState.SUCCESS)
-                }
-                is Result.Error -> {
-                    networkState.postValue(NetworkState.FAILED)
-                }
+    suspend fun getPacks(searchText: String,
+                            pageSize: Int) : Result<List<Pack>> = coroutineScope {
+        val offset = database.packDao().updatedPacksCount()
+        val result = dataSource.searchPacks(searchText, pageSize, offset)
+        if (result is Result.Success) {
+            database.runInTransaction {
+                database.packDao().insertPacks(result.data)
+                database.packDao().updateSavedPacks(result.data.map { it.id })
             }
         }
-        return networkState
+        return@coroutineScope result
+    }
+
+    suspend fun refreshPacks(searchText: String,
+                             pageSize: Int) : Result<List<Pack>> = coroutineScope {
+        val result = dataSource.searchPacks(searchText, pageSize, 0)
+        if(result is Result.Success) {
+            database.runInTransaction {
+                database.packDao().deleteNotSavedPacks()
+                database.packDao().invalidatePacks()
+                database.packDao().insertPacks(result.data)
+                database.packDao().updateSavedPacks(result.data.map { it.id })
+            }
+        }
+        return@coroutineScope result
+    }
+
+    fun searchPacks(searchText: String,
+                    pageSize: Int,
+                    prefetchDistance : Int,
+                    boundaryCallback: PagedList.BoundaryCallback<Pack>) : LiveData<PagedList<Pack>> {
+        val config = PagedList.Config.Builder()
+            .setPageSize(pageSize)
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(pageSize)
+            .setPrefetchDistance(prefetchDistance)
+            .build()
+        return database.packDao().searchPacks("%$searchText%")
+            .toLiveData(config = config, boundaryCallback = boundaryCallback)
     }
 
     companion object {

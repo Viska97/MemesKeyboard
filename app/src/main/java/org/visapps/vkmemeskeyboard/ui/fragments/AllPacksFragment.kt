@@ -74,11 +74,11 @@ class AllPacksFragment : Fragment() {
     private fun initAdapter() {
         val glide = GlideApp.with(this)
         val adapter = PacksAdapter(glide) {
-            viewModel.reload()
+            viewModel.loadPacks()
         }
         packs_list.adapter = adapter
         packs_list.itemAnimator = null
-        viewModel.posts.observe(this, Observer<PagedList<Pack>> {
+        viewModel.packs.observe(this, Observer<PagedList<Pack>> {
             adapter.submitList(it)
         })
         viewModel.networkState.observe(this, Observer {
@@ -92,8 +92,7 @@ class AllPacksFragment : Fragment() {
         })
         swipe_refresh.setOnRefreshListener {
             packs_list.scrollToPosition(0)
-            (packs_list.adapter as? PacksAdapter)?.submitList(null)
-            viewModel.refresh()
+            viewModel.refreshPacks()
         }
     }
 
