@@ -17,7 +17,7 @@ data class SearchPayload (
     val offset: Int = 0
 )
 
-data class StickersPayload (
+data class MemesPayload (
     val pack_id : Int
 )
 

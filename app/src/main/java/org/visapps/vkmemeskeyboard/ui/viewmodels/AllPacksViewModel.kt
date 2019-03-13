@@ -20,10 +20,10 @@ class AllPacksViewModel(private val repository: BackendRepository) : ViewModel()
     }
 
     override val coroutineContext: CoroutineContext
-        get() = job + Dispatchers.Main
+        get() = viewModelJob + Dispatchers.Main
 
-    private val job = Job()
-    private var isRequestInProgress = false
+    private val viewModelJob = Job()
+    private var packsLoadingJob : Job? = null
 
     private val boundaryCallback = object : PagedList.BoundaryCallback<Pack>() {
         override fun onZeroItemsLoaded() {
@@ -37,19 +37,19 @@ class AllPacksViewModel(private val repository: BackendRepository) : ViewModel()
 
     private val search = MutableLiveData<String>()
     val packs: LiveData<PagedList<Pack>> = switchMap(search) {
-        repository.searchPacks(it, pageSize, prefetchDistance, boundaryCallback)
+        repository.getPacks(it, pageSize, prefetchDistance, boundaryCallback)
     }
-    val networkState = MutableLiveData<Int>()
-    val refreshState = MutableLiveData<Int>()
+    val networkState = MutableLiveData<NetworkState>()
+    val refreshState = MutableLiveData<NetworkState>()
 
     init {
-        refreshState.postValue(null)
-        networkState.postValue(null)
+        refreshState.postValue(NetworkState.SUCCESS)
+        networkState.postValue(NetworkState.SUCCESS)
     }
 
     override fun onCleared() {
         super.onCleared()
-        job.cancel()
+        viewModelJob.cancel()
     }
 
     fun showPacks(searchText: String): Boolean {
@@ -61,7 +61,10 @@ class AllPacksViewModel(private val repository: BackendRepository) : ViewModel()
     }
 
     fun refreshPacks() {
-        launch(coroutineContext) {
+        if(packsLoadingJob?.isActive == true){
+            return
+        }
+        packsLoadingJob = launch(coroutineContext) {
             refreshState.postValue(NetworkState.RUNNING)
             val searchText = search.value ?: ""
             val result = withContext(Dispatchers.IO){ repository.refreshPacks(searchText, pageSize) }
@@ -77,12 +80,13 @@ class AllPacksViewModel(private val repository: BackendRepository) : ViewModel()
     }
 
     fun loadPacks() {
-        if (isRequestInProgress) return
-        isRequestInProgress = true
-        launch(coroutineContext) {
+        if(packsLoadingJob?.isActive == true){
+            return
+        }
+        packsLoadingJob = launch(coroutineContext) {
             networkState.postValue(NetworkState.RUNNING)
             val searchText = search.value ?: ""
-            val result = withContext(Dispatchers.IO){ repository.getPacks(searchText, pageSize) }
+            val result = withContext(Dispatchers.IO){ repository.loadPacks(searchText, pageSize) }
             when(result){
                 is Result.Success -> {
                     networkState.postValue(NetworkState.SUCCESS)
@@ -91,7 +95,6 @@ class AllPacksViewModel(private val repository: BackendRepository) : ViewModel()
                     networkState.postValue(NetworkState.FAILED)
                 }
             }
-            isRequestInProgress = false
         }
     }
 

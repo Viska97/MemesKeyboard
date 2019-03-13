@@ -16,7 +16,7 @@ import org.visapps.vkmemeskeyboard.R
 import org.visapps.vkmemeskeyboard.data.models.Pack
 import org.visapps.vkmemeskeyboard.ui.adapter.PacksAdapter
 import org.visapps.vkmemeskeyboard.ui.viewmodels.AllPacksViewModel
-import org.visapps.vkmemeskeyboard.util.InjectorUtils
+import org.visapps.vkmemeskeyboard.util.InjectorUtil
 import org.visapps.vkmemeskeyboard.util.NetworkState
 
 class AllPacksFragment : Fragment() {
@@ -51,7 +51,7 @@ class AllPacksFragment : Fragment() {
         navController = findNavController()
         if (activity is AppCompatActivity){ (activity as AppCompatActivity).setSupportActionBar(toolbar)}
         setHasOptionsMenu(true)
-        val factory = InjectorUtils.provideAllStickersViewModelFactory(requireActivity())
+        val factory = InjectorUtil.provideAllStickersViewModelFactory(requireActivity())
         viewModel = ViewModelProviders.of(this, factory).get(AllPacksViewModel::class.java)
         initAdapter()
         initSwipeToRefresh()
@@ -81,7 +81,7 @@ class AllPacksFragment : Fragment() {
         viewModel.packs.observe(this, Observer<PagedList<Pack>> {
             adapter.submitList(it)
         })
-        viewModel.networkState.observe(this, Observer {
+        viewModel.networkState.observe(this, Observer<NetworkState> {
             adapter.setNetworkState(it)
         })
     }

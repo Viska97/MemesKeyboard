@@ -14,7 +14,7 @@ class PacksAdapter(private val glide: GlideRequests, private val reloadCallback:
     PACK_COMPARATOR
 ){
 
-    private var networkState: Int? = null
+    private var networkState: NetworkState? = null
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (getItemViewType(position)) {
@@ -63,7 +63,7 @@ class PacksAdapter(private val glide: GlideRequests, private val reloadCallback:
         return super.getItemCount() + if (hasExtraRow()) 1 else 0
     }
 
-    fun setNetworkState(newNetworkState: Int?) {
+    fun setNetworkState(newNetworkState: NetworkState) {
         val previousState = this.networkState
         val hadExtraRow = hasExtraRow()
         this.networkState = newNetworkState

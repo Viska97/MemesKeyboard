@@ -16,7 +16,7 @@ import org.visapps.vkmemeskeyboard.R
 import org.visapps.vkmemeskeyboard.data.models.Pack
 import org.visapps.vkmemeskeyboard.ui.adapter.SavedPacksAdapter
 import org.visapps.vkmemeskeyboard.ui.viewmodels.SavedPacksViewModel
-import org.visapps.vkmemeskeyboard.util.InjectorUtils
+import org.visapps.vkmemeskeyboard.util.InjectorUtil
 import org.visapps.vkmemeskeyboard.util.toVisibility
 
 class SavedPacksFragment : Fragment() {
@@ -42,7 +42,7 @@ class SavedPacksFragment : Fragment() {
         toolbar.setNavigationOnClickListener {
             navController.navigateUp()
         }
-        val factory = InjectorUtils.provideSavedStickersViewModelFactory(requireActivity())
+        val factory = InjectorUtil.provideSavedStickersViewModelFactory(requireActivity())
         viewModel = ViewModelProviders.of(this, factory).get(SavedPacksViewModel::class.java)
         initAdapter()
     }

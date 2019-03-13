@@ -8,12 +8,12 @@ import retrofit2.http.Query
 interface VKService {
 
     @GET("messages.getConversations")
-    fun getConversations(@Query("v") v : String,
-                         @Query("access_token") access_token : String,
-                         @Query("count") count : Int,
-                         @Query("filter") filter : String,
-                         @Query("extended") extended : Boolean,
-                         @Query("start_message_id") start_message_id : Int?,
-                         @Query("fields") fields : String)
+    fun getConversationsAsync(@Query("v") v : String,
+                              @Query("access_token") access_token : String,
+                              @Query("count") count : Int,
+                              @Query("filter") filter : String,
+                              @Query("extended") extended : Boolean,
+                              @Query("start_message_id") start_message_id : Int?,
+                              @Query("fields") fields : String)
             : Deferred<Response<ConversationsResponse>>
 }

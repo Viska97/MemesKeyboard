@@ -31,6 +31,6 @@ data class Pack(
 
 object PackStatus {
     const val NOTSAVED = 0
-    const val INPROGRESS = 1
+    const val IN_PROGRESS = 1
     const val SAVED = 2
 }

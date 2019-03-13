@@ -19,7 +19,7 @@ import org.visapps.vkmemeskeyboard.data.models.Pack
 import org.visapps.vkmemeskeyboard.data.models.Meme
 import org.visapps.vkmemeskeyboard.ui.adapter.MemesAdapter
 import org.visapps.vkmemeskeyboard.ui.viewmodels.PackViewModel
-import org.visapps.vkmemeskeyboard.util.InjectorUtils
+import org.visapps.vkmemeskeyboard.util.InjectorUtil
 import org.visapps.vkmemeskeyboard.util.NetworkState
 import org.visapps.vkmemeskeyboard.util.calculateNoOfColumns
 import org.visapps.vkmemeskeyboard.util.toVisibility
@@ -53,7 +53,7 @@ class PackFragment : Fragment() {
             navController.navigateUp()
         }
         val packId = arguments?.getInt("packId") ?: 0
-        val factory = InjectorUtils.providePackViewModelFactory(requireActivity(), packId)
+        val factory = InjectorUtil.providePackViewModelFactory(requireActivity(), packId)
         viewModel = ViewModelProviders.of(this, factory).get(PackViewModel::class.java)
         initAdapter()
         initObservers()
@@ -75,7 +75,7 @@ class PackFragment : Fragment() {
         viewModel.pack.observe(this, Observer<Pack> {
             toolbar.title = it.name
         })
-        viewModel.networkState.observe(this, Observer<Int> {
+        viewModel.networkState.observe(this, Observer<NetworkState> {
             progress_bar.visibility =
                 toVisibility(it == NetworkState.RUNNING)
             error_msg.visibility =

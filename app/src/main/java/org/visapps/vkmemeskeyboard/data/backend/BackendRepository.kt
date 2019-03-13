@@ -5,9 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.paging.PagedList
 import androidx.paging.toLiveData
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkmemeskeyboard.data.database.AppDatabase
@@ -21,34 +19,34 @@ import java.io.IOException
 
 class BackendRepository(private val dataSource: BackendDataSource, private val database: AppDatabase) {
 
-    suspend fun getPackStatus(packId: Int) : Int = withContext(Dispatchers.IO) {
+    suspend fun getPackStatus(packId: Int) : Int = coroutineScope {
         val status = database.packDao().getPackStatusById(packId)
         status?.let {
-            return@withContext it
+            return@coroutineScope it
         }
-        return@withContext PackStatus.NOTSAVED
+        return@coroutineScope PackStatus.NOTSAVED
     }
 
-    suspend fun getPack(packId: Int) : Result<Pack> = withContext(Dispatchers.IO) {
+    suspend fun getPack(packId: Int) : Result<Pack> = coroutineScope {
         val result = database.packDao().getPackById(packId)
         result?.let {
-            return@withContext Result.Success(it)
+            return@coroutineScope Result.Success(it)
         }
-        return@withContext Result.Error(IOException("No pack found"))
+        return@coroutineScope Result.Error(IOException("No pack found"))
     }
 
-    suspend fun updatePackStatus(packId: Int, status : Int) = withContext(Dispatchers.IO) {
+    suspend fun updatePackStatus(packId: Int, status : Int) = coroutineScope {
         database.packDao().updatePackStatus(packId, status)
     }
 
-    suspend fun savePack(packId : Int, memes : List<Meme>) = withContext(Dispatchers.IO) {
+    suspend fun savePack(packId : Int, memes : List<Meme>) = coroutineScope {
         database.runInTransaction {
             database.stickerDao().insertMemes(memes)
             database.packDao().updatePackStatus(packId, PackStatus.SAVED)
         }
     }
 
-    suspend fun removePack(packId: Int) = withContext(Dispatchers.IO) {
+    suspend fun removePack(packId: Int) = coroutineScope {
         database.runInTransaction {
             val pack = database.packDao().getPackById(packId)
             pack?.let {
@@ -62,24 +60,22 @@ class BackendRepository(private val dataSource: BackendDataSource, private val d
         }
     }
 
-    suspend fun getStickers(packId : Int, forceNetwork : Boolean = false) : Result<List<Meme>> = withContext(Dispatchers.IO){
+    suspend fun getMemes(packId : Int,
+                         forceNetwork : Boolean = false)
+            : Result<List<Meme>> = coroutineScope {
         if(forceNetwork){
-            return@withContext dataSource.getStickers(packId)
+            return@coroutineScope dataSource.getMemes(packId)
         }
         else{
             val result = database.stickerDao().getMemes(packId)
             if(result.isEmpty()){
-                dataSource.getStickers(packId)
+                dataSource.getMemes(packId)
             }
-            return@withContext Result.Success(result)
+            return@coroutineScope Result.Success(result)
         }
     }
 
-    fun getSavedPacks() : LiveData<List<Pack>> {
-        return database.packDao().getSavedPacks()
-    }
-
-    suspend fun getPacks(searchText: String,
+    suspend fun loadPacks(searchText: String,
                             pageSize: Int) : Result<List<Pack>> = coroutineScope {
         val offset = database.packDao().updatedPacksCount()
         val result = dataSource.searchPacks(searchText, pageSize, offset)
@@ -106,10 +102,10 @@ class BackendRepository(private val dataSource: BackendDataSource, private val d
         return@coroutineScope result
     }
 
-    fun searchPacks(searchText: String,
-                    pageSize: Int,
-                    prefetchDistance : Int,
-                    boundaryCallback: PagedList.BoundaryCallback<Pack>) : LiveData<PagedList<Pack>> {
+    fun getPacks(searchText: String,
+                 pageSize: Int,
+                 prefetchDistance : Int,
+                 boundaryCallback: PagedList.BoundaryCallback<Pack>) : LiveData<PagedList<Pack>> {
         val config = PagedList.Config.Builder()
             .setPageSize(pageSize)
             .setEnablePlaceholders(false)
@@ -118,6 +114,10 @@ class BackendRepository(private val dataSource: BackendDataSource, private val d
             .build()
         return database.packDao().searchPacks("%$searchText%")
             .toLiveData(config = config, boundaryCallback = boundaryCallback)
+    }
+
+    fun getSavedPacks() : LiveData<List<Pack>> {
+        return database.packDao().getSavedPacks()
     }
 
     companion object {

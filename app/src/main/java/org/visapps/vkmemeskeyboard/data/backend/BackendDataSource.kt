@@ -8,13 +8,8 @@ import java.io.IOException
 
 class BackendDataSource(private val service: BackendService) {
 
-    suspend fun searchPacks(searchText: String, limit: Int, offset: Int) =
-        safeApiCall { requestSearch(searchText, limit, offset) }
-
-    suspend fun getStickers(packId: Int) = safeApiCall { requestStickers(packId) }
-
-    private suspend fun requestSearch(searchText: String, limit: Int, offset: Int): Result<List<Pack>> {
-        val response = service.searchPacks(
+    suspend fun searchPacks(searchText: String, limit: Int, offset: Int): Result<List<Pack>> = safeApiCall {
+        val response = service.searchPacksAsync(
             SearchPayload(
                 searchText,
                 limit,
@@ -23,22 +18,22 @@ class BackendDataSource(private val service: BackendService) {
         ).await()
         if (response.isSuccessful) {
             response.body()?.result?.let {
-                return Result.Success(it)
+                return@safeApiCall Result.Success(it)
             }
         }
-        return Result.Error(
+        return@safeApiCall Result.Error(
             IOException("Error getting data")
         )
     }
 
-    private suspend fun requestStickers(packId: Int): Result<List<Meme>> {
-        val response = service.getMemes(StickersPayload(packId)).await()
+    suspend fun getMemes(packId: Int): Result<List<Meme>> = safeApiCall {
+        val response = service.getMemesAsync(MemesPayload(packId)).await()
         if (response.isSuccessful) {
             response.body()?.result?.let {
-                return Result.Success(it)
+                return@safeApiCall Result.Success(it)
             }
         }
-        return Result.Error(
+        return@safeApiCall Result.Error(
             IOException("Error getting data")
         )
     }

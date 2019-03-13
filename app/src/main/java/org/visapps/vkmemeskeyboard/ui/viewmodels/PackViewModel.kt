@@ -2,10 +2,7 @@ package org.visapps.vkmemeskeyboard.ui.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel;
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.visapps.vkmemeskeyboard.data.backend.BackendRepository
 import org.visapps.vkmemeskeyboard.data.models.Pack
 import org.visapps.vkmemeskeyboard.data.models.Meme
@@ -20,7 +17,7 @@ class PackViewModel(private val repository : BackendRepository, private val pack
 
     private val job = Job()
 
-    val networkState = MutableLiveData<Int>()
+    val networkState = MutableLiveData<NetworkState>()
     val pack = MutableLiveData<Pack>()
     val stickers = MutableLiveData<List<Meme>>()
 
@@ -40,7 +37,7 @@ class PackViewModel(private val repository : BackendRepository, private val pack
 
     private fun loadPack() {
         launch(coroutineContext){
-            val result = repository.getPack(packId)
+            val result = withContext(Dispatchers.IO) {repository.getPack(packId)}
             if(result is Result.Success){
                 pack.postValue(result.data)
             }
@@ -50,7 +47,7 @@ class PackViewModel(private val repository : BackendRepository, private val pack
     private fun loadStickers() {
         launch( coroutineContext) {
             networkState.postValue(NetworkState.RUNNING)
-            val result = repository.getStickers(packId)
+            val result = withContext(Dispatchers.IO) {repository.getMemes(packId)}
             when(result){
                 is Result.Success -> {stickers.postValue(result.data)
                     networkState.postValue(NetworkState.SUCCESS)}

@@ -10,7 +10,7 @@ import com.vk.sdk.VKSdk
 import com.vk.sdk.api.VKError
 import kotlinx.android.synthetic.main.activity_auth.*
 import org.visapps.vkmemeskeyboard.R
-import org.visapps.vkmemeskeyboard.util.InjectorUtils
+import org.visapps.vkmemeskeyboard.util.InjectorUtil
 
 class AuthActivity : Activity() {
 
@@ -36,7 +36,7 @@ class AuthActivity : Activity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        InjectorUtils.getVKRepository(this).handleLogIn()
+        InjectorUtil.getVKRepository(this).handleLogIn()
         if (!VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
                 override fun onResult(res: VKAccessToken) {
                     noauth.visibility = View.GONE

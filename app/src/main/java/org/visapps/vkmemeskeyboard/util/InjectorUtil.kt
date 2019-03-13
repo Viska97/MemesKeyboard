@@ -8,7 +8,7 @@ import org.visapps.vkmemeskeyboard.ui.viewmodels.AllPacksViewModelFactory
 import org.visapps.vkmemeskeyboard.ui.viewmodels.PackViewModelFactory
 import org.visapps.vkmemeskeyboard.ui.viewmodels.SavedPacksViewModelFactory
 
-object InjectorUtils {
+object InjectorUtil {
 
     fun getVKRepository(context: Context) : VKRepository {
         return VKRepository.get(context)

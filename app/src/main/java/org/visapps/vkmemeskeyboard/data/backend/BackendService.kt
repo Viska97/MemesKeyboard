@@ -8,9 +8,9 @@ import retrofit2.http.POST
 interface BackendService {
 
     @POST("searchPacks")
-    fun searchPacks(@Body payload : SearchPayload) : Deferred<Response<SearchResponse>>
+    fun searchPacksAsync(@Body payload : SearchPayload) : Deferred<Response<SearchResponse>>
 
     @POST("getStickers")
-    fun getMemes(@Body payload : StickersPayload) : Deferred<Response<MemesResponse>>
+    fun getMemesAsync(@Body payload : MemesPayload) : Deferred<Response<MemesResponse>>
 
 }

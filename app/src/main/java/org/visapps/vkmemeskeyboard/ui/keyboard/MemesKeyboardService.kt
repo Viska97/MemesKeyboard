@@ -13,8 +13,7 @@ import org.visapps.vkmemeskeyboard.R
 import org.visapps.vkmemeskeyboard.data.models.Dialog
 import org.visapps.vkmemeskeyboard.ui.activity.AuthActivity
 import org.visapps.vkmemeskeyboard.ui.adapter.DialogsAdapter
-import org.visapps.vkmemeskeyboard.util.InjectorUtils
-import org.visapps.vkmemeskeyboard.util.KeyboardState
+import org.visapps.vkmemeskeyboard.util.InjectorUtil
 import org.visapps.vkmemeskeyboard.util.NetworkState
 import org.visapps.vkmemeskeyboard.util.switchVisibility
 
@@ -39,7 +38,7 @@ class MemesKeyboardService : LifecycleKeyboardService() {
         view.list_dialogs.setHasFixedSize(true)
         adapter = DialogsAdapter(this)
         view.list_dialogs.adapter = adapter
-        viewModel = InjectorUtils.getStickersKeyboardViewModel(this)
+        viewModel = InjectorUtil.getStickersKeyboardViewModel(this)
         registerObservers()
         return view
     }
@@ -50,13 +49,13 @@ class MemesKeyboardService : LifecycleKeyboardService() {
     }
 
     private fun registerObservers() {
-        viewModel.keyboardState.observe(this, Observer<Int> {
+        viewModel.keyboardState.observe(this, Observer<KeyboardState> {
             view.login.visibility =
-                switchVisibility(it == KeyboardState.NOTAUTHENTICATED)
+                switchVisibility(it == KeyboardState.NOT_AUTHENTICATED)
             view.dialogs.visibility =
                 switchVisibility(it == KeyboardState.DIALOGS)
         })
-        viewModel.networkState.observe(this, Observer<Int> {
+        viewModel.networkState.observe(this, Observer<NetworkState> {
             view.redo_button.visibility =
                 switchVisibility(it == NetworkState.FAILED)
             view.loading_indicator.visibility =
@@ -64,7 +63,7 @@ class MemesKeyboardService : LifecycleKeyboardService() {
             view.update_button.visibility =
                 switchVisibility(it == NetworkState.SUCCESS)
         })
-        viewModel.refreshState.observe(this, Observer<Int> {
+        viewModel.refreshState.observe(this, Observer<NetworkState> {
             view.progress.visibility =
                 switchVisibility(it == NetworkState.RUNNING)
             view.list_dialogs.visibility =

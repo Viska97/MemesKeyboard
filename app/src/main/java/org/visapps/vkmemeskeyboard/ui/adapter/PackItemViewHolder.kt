@@ -39,7 +39,7 @@ class PackItemViewHolder(private val view: View, private val glide: GlideRequest
         }
         statusButton.setOnClickListener {
             pack?.let {
-                //it.status = PackStatus.INPROGRESS
+                //it.status = PackStatus.IN_PROGRESS
                 //bind(it)
                 val data = Data.Builder().putInt("packId", it.id).build()
                 val workRequest = OneTimeWorkRequest.Builder(SavePackWorker::class.java).setInputData(data).build()
@@ -60,7 +60,7 @@ class PackItemViewHolder(private val view: View, private val glide: GlideRequest
             statusButton.visibility =
                 toVisibility(it.status == PackStatus.NOTSAVED || it.status == PackStatus.SAVED)
             statusProgress.visibility =
-                toVisibility(it.status == PackStatus.INPROGRESS)
+                toVisibility(it.status == PackStatus.IN_PROGRESS)
             glide.load(it.logo)
                 .fitCenter()
                 .into(logo)
@@ -78,7 +78,7 @@ class PackItemViewHolder(private val view: View, private val glide: GlideRequest
             statusButton.visibility =
                 toVisibility(it.status == PackStatus.NOTSAVED || it.status == PackStatus.SAVED)
             statusProgress.visibility =
-                toVisibility(it.status == PackStatus.INPROGRESS)
+                toVisibility(it.status == PackStatus.IN_PROGRESS)
         }
     }
 

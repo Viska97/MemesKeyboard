@@ -25,7 +25,7 @@ class NetworkStateItemViewHolder(
         }
     }
 
-    fun bindTo(networkState: Int?) {
+    fun bindTo(networkState: NetworkState?) {
         progressBar.visibility =
             toVisibility(networkState == NetworkState.RUNNING)
         reload.visibility =
