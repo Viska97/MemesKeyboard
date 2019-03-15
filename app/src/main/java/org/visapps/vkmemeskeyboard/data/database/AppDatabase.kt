@@ -7,13 +7,15 @@ import androidx.room.RoomDatabase
 import org.visapps.vkmemeskeyboard.data.models.Dialog
 import org.visapps.vkmemeskeyboard.data.models.Pack
 import org.visapps.vkmemeskeyboard.data.models.Meme
+import org.visapps.vkmemeskeyboard.data.models.User
 
-@Database(entities = [Pack::class, Meme::class, Dialog::class], version = 1, exportSchema = false)
+@Database(entities = [Pack::class, Meme::class, Dialog::class, User::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun packDao(): PackDao
     abstract fun stickerDao(): MemeDao
     abstract fun dialogDao() : DialogDao
+    abstract fun userDao() : UserDao
 
     companion object {
 

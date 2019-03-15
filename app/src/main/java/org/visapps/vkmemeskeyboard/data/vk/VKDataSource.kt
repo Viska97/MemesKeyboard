@@ -8,6 +8,12 @@ import java.util.ArrayList
 
 class VKDataSource(private val vkService: VKService) {
 
+    suspend fun getCurrentUser(v : String,
+                               access_token : String,
+                               fields : String,
+                               name_case : String) : Result<UsersPage>
+            = vkApiCall{ vkService.getUsersAsync(v,access_token, null, fields, name_case).await() }
+
     suspend fun getDialogs(v : String,
                            access_token : String,
                            count : Int,

@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.visapps.vkmemeskeyboard.data.database.AppDatabase
 import org.visapps.vkmemeskeyboard.data.models.Dialog
+import org.visapps.vkmemeskeyboard.data.models.User
 import org.visapps.vkmemeskeyboard.util.Result
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -23,6 +24,24 @@ class VKRepository private constructor(private val dataSource : VKDataSource, pr
 
     init{
         authStatus.postValue(VKSdk.isLoggedIn())
+    }
+
+    suspend fun loadUser() : Result<User> = coroutineScope {
+        val result : Result<User> = dataSource.getCurrentUser(API_VERSION, VKAccessToken.currentToken().accessToken, "photo_max", "Num")
+        when(result) {
+            is Result.Success ->{
+                database.userDao().insertUser(result.data)
+            }
+            is Result.NotAuthenticated -> {
+                handleLogout()
+            }
+            is Result.Error -> {
+                database.userDao().getUser()?.let {
+                    return@coroutineScope Result.Success(it)
+                }
+            }
+        }
+        return@coroutineScope result
     }
 
     suspend fun loadDialogs(pageSize: Int,
