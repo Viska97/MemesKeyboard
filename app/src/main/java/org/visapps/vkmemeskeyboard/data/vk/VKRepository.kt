@@ -1,6 +1,7 @@
 package org.visapps.vkmemeskeyboard.data.vk
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagedList
@@ -20,10 +21,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class VKRepository private constructor(private val dataSource : VKDataSource, private val database : AppDatabase) {
 
-    val authStatus = MutableLiveData<Boolean>()
+    val isLoggedIn = MutableLiveData<Boolean>()
 
     init{
-        authStatus.postValue(VKSdk.isLoggedIn())
+        isLoggedIn.postValue(VKSdk.isLoggedIn())
     }
 
     suspend fun loadUser() : Result<User> = coroutineScope {
@@ -88,16 +89,17 @@ class VKRepository private constructor(private val dataSource : VKDataSource, pr
             .setInitialLoadSizeHint(pageSize)
             .setPrefetchDistance(prefetchDistance)
             .build()
+        Log.i(tag, "returning list")
         return database.dialogDao().getDialogs()
             .toLiveData(config = config, boundaryCallback = boundaryCallback)
     }
 
     fun handleLogIn() {
-        authStatus.postValue(VKSdk.isLoggedIn())
+        isLoggedIn.postValue(VKSdk.isLoggedIn())
     }
 
     private fun handleLogout() {
-        authStatus.postValue(false)
+        isLoggedIn.postValue(false)
         VKSdk.logout()
     }
 
@@ -106,6 +108,8 @@ class VKRepository private constructor(private val dataSource : VKDataSource, pr
         private const val URL = "https://api.vk.com/method/"
 
         const val API_VERSION = "5.92"
+
+        const val tag = "VKRep"
 
 
         @Volatile

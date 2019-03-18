@@ -1,14 +1,13 @@
 package org.visapps.vkmemeskeyboard.ui.keyboard
 
 import android.util.Log
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import androidx.paging.PagedList
 import kotlinx.coroutines.*
 import org.visapps.vkmemeskeyboard.data.backend.BackendRepository
 import org.visapps.vkmemeskeyboard.data.models.Dialog
 import org.visapps.vkmemeskeyboard.data.vk.VKRepository
+import org.visapps.vkmemeskeyboard.util.AbsentLiveData
 import org.visapps.vkmemeskeyboard.util.NetworkState
 import org.visapps.vkmemeskeyboard.util.Result
 import kotlin.coroutines.CoroutineContext
@@ -33,27 +32,36 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
 
     private val boundaryCallback = object : PagedList.BoundaryCallback<Dialog>() {
         override fun onZeroItemsLoaded() {
+            Log.i(TAG, "zero loaded")
             startMessageId = null
             loadDialogs()
         }
 
         override fun onItemAtEndLoaded(itemAtEnd: Dialog) {
             startMessageId = itemAtEnd.last_message_id
+            Log.i(TAG, "item at end")
             loadDialogs()
         }
     }
 
-    private val authStatus = vkRepository.authStatus
+    private val isLoggedIn = vkRepository.isLoggedIn
 
     val keyboardState = MediatorLiveData<KeyboardState>()
-    val dialogs = vkRepository.getDialogs(pageSize, prefetchDistance, boundaryCallback)
+    val dialogs: LiveData<PagedList<Dialog>> = Transformations.switchMap(isLoggedIn) { isLoggedIn ->
+        if (isLoggedIn) {
+            vkRepository.getDialogs(pageSize, prefetchDistance, boundaryCallback)
+        } else {
+            AbsentLiveData.create()
+        }
+    }
+    //val dialogs = vkRepository.getDialogs(pageSize, prefetchDistance, boundaryCallback)
     val networkState = MutableLiveData<NetworkState>()
     val refreshState = MutableLiveData<NetworkState>()
 
     init{
-        refreshState.postValue(null)
-        networkState.postValue(null)
-        keyboardState.addSource(authStatus) {updateState(it)}
+        refreshState.postValue(NetworkState.SUCCESS)
+        networkState.postValue(NetworkState.SUCCESS)
+        keyboardState.addSource(isLoggedIn) {updateState(it)}
     }
 
     public override fun onCleared() {
@@ -86,6 +94,7 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
         }
         dialogsLoadingJob = launch(coroutineContext) {
             networkState.postValue(org.visapps.vkmemeskeyboard.util.NetworkState.RUNNING)
+            Log.i(TAG, "started loading")
             val result = withContext(Dispatchers.IO) {
                 vkRepository.loadDialogs(pageSize, startMessageId)
             }

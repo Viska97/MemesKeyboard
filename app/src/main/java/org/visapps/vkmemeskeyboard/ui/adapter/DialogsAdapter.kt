@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.chat_item.view.*
+import kotlinx.android.synthetic.main.dialog_item.view.*
 import org.visapps.vkmemeskeyboard.GlideApp
 import org.visapps.vkmemeskeyboard.R
 import org.visapps.vkmemeskeyboard.data.models.Dialog
@@ -17,7 +17,7 @@ class DialogsAdapter(val context : Context) : RecyclerView.Adapter<DialogsAdapte
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder =
         ViewHolder(
             LayoutInflater.from(context).inflate(
-                R.layout.chat_item,
+                R.layout.dialog_item,
                 p0,
                 false
             )

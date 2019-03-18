@@ -1,5 +1,6 @@
 package org.visapps.vkmemeskeyboard.ui.keyboard
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
@@ -16,8 +17,13 @@ import org.visapps.vkmemeskeyboard.ui.adapter.DialogsAdapter
 import org.visapps.vkmemeskeyboard.util.InjectorUtil
 import org.visapps.vkmemeskeyboard.util.NetworkState
 import org.visapps.vkmemeskeyboard.util.switchVisibility
+import org.visapps.vkmemeskeyboard.util.toVisibility
 
 class MemesKeyboardService : LifecycleKeyboardService() {
+
+    companion object {
+        const val TAG = "MKeyboard"
+    }
 
     private lateinit var view : View
     private lateinit var viewModel : MemesKeyboardViewModel
@@ -56,21 +62,22 @@ class MemesKeyboardService : LifecycleKeyboardService() {
                 switchVisibility(it == KeyboardState.DIALOGS)
         })
         viewModel.networkState.observe(this, Observer<NetworkState> {
-            view.redo_button.visibility =
-                switchVisibility(it == NetworkState.FAILED)
-            view.loading_indicator.visibility =
-                switchVisibility(it == NetworkState.RUNNING)
             view.update_button.visibility =
-                switchVisibility(it == NetworkState.SUCCESS)
+                toVisibility(it == NetworkState.SUCCESS)
         })
         viewModel.refreshState.observe(this, Observer<NetworkState> {
             view.progress.visibility =
-                switchVisibility(it == NetworkState.RUNNING)
+                toVisibility(it == NetworkState.RUNNING)
             view.list_dialogs.visibility =
-                switchVisibility(it == NetworkState.SUCCESS)
+                toVisibility(it == NetworkState.SUCCESS)
+            view.alert.visibility = toVisibility(it == NetworkState.FAILED)
         })
-        viewModel.dialogs.observe(this, Observer<PagedList<Dialog>> {
-            adapter.updateDialogs(it)
+        viewModel.dialogs.observe(this, Observer {
+            it?.let {
+                Log.i(TAG, "dialogs size ${it.size}")
+                adapter.updateDialogs(it)
+                adapter.notifyDataSetChanged()
+            }
         })
 
     }

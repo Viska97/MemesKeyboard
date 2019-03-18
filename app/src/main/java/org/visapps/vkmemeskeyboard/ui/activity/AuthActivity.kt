@@ -15,7 +15,7 @@ import org.visapps.vkmemeskeyboard.util.InjectorUtil
 class AuthActivity : Activity() {
 
     companion object {
-        private const val scope = ""
+        private const val scope = "messages"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
