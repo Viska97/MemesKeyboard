@@ -1,6 +1,7 @@
 package org.visapps.vkmemeskeyboard.data.vk
 
 import org.visapps.vkmemeskeyboard.data.models.Dialog
+import org.visapps.vkmemeskeyboard.data.models.User
 import org.visapps.vkmemeskeyboard.util.Result
 import org.visapps.vkmemeskeyboard.util.safeApiCall
 import java.io.IOException
@@ -11,8 +12,15 @@ class VKDataSource(private val vkService: VKService) {
     suspend fun getCurrentUser(v : String,
                                access_token : String,
                                fields : String,
-                               name_case : String) : Result<UsersPage>
-            = vkApiCall{ vkService.getUsersAsync(v,access_token, null, fields, name_case).await() }
+                               name_case : String) : Result<User> = safeApiCall {
+        val response = vkService.getUsersAsync(v,access_token, null, fields, name_case).await()
+        if(response.successful()) {
+            response.body()?.response?.users?.let {
+                return@safeApiCall Result.Success(it[0])
+            }
+        }
+        return@safeApiCall processUnsuccessfulResponse<UsersPage, User>(response)
+    }
 
     suspend fun getDialogs(v : String,
                            access_token : String,
