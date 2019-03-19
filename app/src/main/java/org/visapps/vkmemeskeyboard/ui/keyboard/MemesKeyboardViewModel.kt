@@ -1,6 +1,5 @@
 package org.visapps.vkmemeskeyboard.ui.keyboard
 
-import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagedList
 import kotlinx.coroutines.*
@@ -32,29 +31,26 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
 
     private val boundaryCallback = object : PagedList.BoundaryCallback<Dialog>() {
         override fun onZeroItemsLoaded() {
-            Log.i(TAG, "zero loaded")
             startMessageId = null
-            loadDialogs()
+            loadInitialDialogs()
         }
 
         override fun onItemAtEndLoaded(itemAtEnd: Dialog) {
             startMessageId = itemAtEnd.last_message_id
-            Log.i(TAG, "item at end")
-            loadDialogs()
+            loadNextDialogs()
         }
     }
 
     private val isLoggedIn = vkRepository.isLoggedIn
 
     val keyboardState = MediatorLiveData<KeyboardState>()
-    val dialogs: LiveData<PagedList<Dialog>> = Transformations.switchMap(isLoggedIn) { isLoggedIn ->
-        if (isLoggedIn) {
+    val dialogs: LiveData<PagedList<Dialog>> = Transformations.switchMap(keyboardState) { isLoggedIn ->
+        if (keyboardState == KeyboardState.DIALOGS) {
             vkRepository.getDialogs(pageSize, prefetchDistance, boundaryCallback)
         } else {
             AbsentLiveData.create()
         }
     }
-    //val dialogs = vkRepository.getDialogs(pageSize, prefetchDistance, boundaryCallback)
     val networkState = MutableLiveData<NetworkState>()
     val refreshState = MutableLiveData<NetworkState>()
 
@@ -66,7 +62,6 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
 
     public override fun onCleared() {
         viewModelJob.cancel()
-        Log.i(TAG, "On cleared")
         super.onCleared()
     }
 
@@ -88,13 +83,34 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
         }
     }
 
-    fun loadDialogs() {
+    fun retryLoading() = loadNextDialogs()
+
+    private fun loadInitialDialogs() {
+        if(dialogsLoadingJob?.isActive == true){
+            return
+        }
+        dialogsLoadingJob = launch(coroutineContext) {
+            refreshState.postValue(NetworkState.RUNNING)
+            val result = withContext(Dispatchers.IO) {
+                vkRepository.loadDialogs(pageSize)
+            }
+            when(result){
+                is Result.Success -> {
+                    refreshState.postValue(NetworkState.SUCCESS)
+                }
+                is Result.Error -> {
+                    refreshState.postValue(NetworkState.FAILED)
+                }
+            }
+        }
+    }
+
+    private fun loadNextDialogs() {
         if(dialogsLoadingJob?.isActive == true){
             return
         }
         dialogsLoadingJob = launch(coroutineContext) {
             networkState.postValue(org.visapps.vkmemeskeyboard.util.NetworkState.RUNNING)
-            Log.i(TAG, "started loading")
             val result = withContext(Dispatchers.IO) {
                 vkRepository.loadDialogs(pageSize, startMessageId)
             }

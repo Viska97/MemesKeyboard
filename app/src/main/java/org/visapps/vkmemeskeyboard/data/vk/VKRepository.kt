@@ -46,7 +46,7 @@ class VKRepository private constructor(private val dataSource : VKDataSource, pr
     }
 
     suspend fun loadDialogs(pageSize: Int,
-                            startMessageId: Int?) : Result<List<Dialog>> = coroutineScope {
+                            startMessageId: Int? = null) : Result<List<Dialog>> = coroutineScope {
         val result = dataSource.getDialogs(
             VKRepository.API_VERSION,
             VKAccessToken.currentToken().accessToken,

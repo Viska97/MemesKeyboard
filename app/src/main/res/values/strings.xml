@@ -9,6 +9,7 @@
     <string name="loginfailed">Login with VK account failed</string>
     <string name="vkdialogs">VK Dialogs</string>
     <string name="reload">Reload</string>
+    <string name="error">Error</string>
     <string name="loadingerror">Error loading data</string>
     <string name="search_packs">Search packs</string>
     <string name="memes_pack">Memes pack</string>

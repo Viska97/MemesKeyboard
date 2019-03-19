@@ -1,17 +1,15 @@
 package org.visapps.vkmemeskeyboard.ui.keyboard
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.paging.PagedList
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.keyboard_dialogs.view.*
 import kotlinx.android.synthetic.main.keyboard_login.view.*
 import kotlinx.android.synthetic.main.keyboard_main.view.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.newTask
+import org.visapps.vkmemeskeyboard.GlideApp
 import org.visapps.vkmemeskeyboard.R
-import org.visapps.vkmemeskeyboard.data.models.Dialog
 import org.visapps.vkmemeskeyboard.ui.activity.AuthActivity
 import org.visapps.vkmemeskeyboard.ui.adapter.DialogsAdapter
 import org.visapps.vkmemeskeyboard.util.InjectorUtil
@@ -40,9 +38,12 @@ class MemesKeyboardService : LifecycleKeyboardService() {
         view.loginbutton.setOnClickListener {
             startActivity(intentFor<AuthActivity>().newTask())
         }
+        val glide = GlideApp.with(this)
         view.list_dialogs.layoutManager = GridLayoutManager(this,3,GridLayoutManager.HORIZONTAL,false)
         view.list_dialogs.setHasFixedSize(true)
-        adapter = DialogsAdapter(this)
+        adapter = DialogsAdapter(glide) {
+
+        }
         view.list_dialogs.adapter = adapter
         viewModel = InjectorUtil.getStickersKeyboardViewModel(this)
         registerObservers()
@@ -62,21 +63,20 @@ class MemesKeyboardService : LifecycleKeyboardService() {
                 switchVisibility(it == KeyboardState.DIALOGS)
         })
         viewModel.networkState.observe(this, Observer<NetworkState> {
-            view.update_button.visibility =
-                toVisibility(it == NetworkState.SUCCESS)
+            adapter.setNetworkState(it)
         })
         viewModel.refreshState.observe(this, Observer<NetworkState> {
             view.progress.visibility =
                 toVisibility(it == NetworkState.RUNNING)
             view.list_dialogs.visibility =
                 toVisibility(it == NetworkState.SUCCESS)
+            view.update_button.visibility =
+                toVisibility(it == NetworkState.SUCCESS)
             view.alert.visibility = toVisibility(it == NetworkState.FAILED)
         })
-        viewModel.dialogs.observe(this, Observer {
-            it?.let {
-                Log.i(TAG, "dialogs size ${it.size}")
-                adapter.updateDialogs(it)
-                adapter.notifyDataSetChanged()
+        viewModel.dialogs.observe(this, Observer {pagedList->
+            pagedList?.let {
+                adapter.submitList(it)
             }
         })
 

@@ -85,12 +85,10 @@ class PacksAdapter(private val glide: GlideRequests, private val reloadCallback:
                 oldItem.id == newItem.id
 
             override fun areItemsTheSame(oldItem: Pack, newItem: Pack): Boolean {
-                //Log.i("Vasily", "areItemsTheSame")
                 return oldItem.status == newItem.status && oldItem.updated == newItem.updated && oldItem.logo == newItem.logo && oldItem.name == newItem.name
             }
 
             override fun getChangePayload(oldItem: Pack, newItem: Pack): Any? {
-                Log.i("Vasily", "Change Payload")
                 return if (sameExceptStatus(
                         oldItem,
                         newItem
