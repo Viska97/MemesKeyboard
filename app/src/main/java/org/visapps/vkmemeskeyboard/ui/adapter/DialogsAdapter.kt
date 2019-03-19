@@ -1,6 +1,7 @@
 package org.visapps.vkmemeskeyboard.ui.adapter
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,7 @@ import org.visapps.vkmemeskeyboard.R
 import org.visapps.vkmemeskeyboard.data.models.Dialog
 import org.visapps.vkmemeskeyboard.util.NetworkState
 
-class DialogsAdapter(private val glide: GlideRequests, private val reloadCallback: () -> Unit)
+class DialogsAdapter(private val glide: GlideRequests, private val dialogCallback: (Int) -> Unit, private val reloadCallback: () -> Unit)
     : PagedListAdapter<Dialog, RecyclerView.ViewHolder>(DIALOG_COMPARATOR) {
 
     private var networkState: NetworkState? = null
@@ -36,9 +37,10 @@ class DialogsAdapter(private val glide: GlideRequests, private val reloadCallbac
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            R.layout.dialog_item -> PackItemViewHolder.create(
+            R.layout.dialog_item -> DialogViewHolder.create(
                 parent,
-                glide
+                glide,
+                dialogCallback
             )
             R.layout.dialog_network_state -> DialogNetworkStateViewHolder.create(
                 parent,

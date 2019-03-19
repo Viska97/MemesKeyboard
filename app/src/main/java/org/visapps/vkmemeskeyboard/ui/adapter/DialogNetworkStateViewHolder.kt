@@ -35,10 +35,10 @@ class DialogNetworkStateViewHolder(
     }
 
     companion object {
-        fun create(parent: ViewGroup, retryCallback: () -> Unit): NetworkStateItemViewHolder {
+        fun create(parent: ViewGroup, reloadCallback: () -> Unit): DialogNetworkStateViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.dialog_network_state, parent, false)
-            return NetworkStateItemViewHolder(view, retryCallback)
+            return DialogNetworkStateViewHolder(view, reloadCallback)
         }
     }
 }

@@ -44,8 +44,8 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
     private val isLoggedIn = vkRepository.isLoggedIn
 
     val keyboardState = MediatorLiveData<KeyboardState>()
-    val dialogs: LiveData<PagedList<Dialog>> = Transformations.switchMap(keyboardState) { isLoggedIn ->
-        if (keyboardState == KeyboardState.DIALOGS) {
+    val dialogs: LiveData<PagedList<Dialog>> = Transformations.switchMap(keyboardState) { state ->
+        if (state == KeyboardState.DIALOGS) {
             vkRepository.getDialogs(pageSize, prefetchDistance, boundaryCallback)
         } else {
             AbsentLiveData.create()

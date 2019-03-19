@@ -1,5 +1,6 @@
 package org.visapps.vkmemeskeyboard.ui.keyboard
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -40,10 +41,12 @@ class MemesKeyboardService : LifecycleKeyboardService() {
         }
         val glide = GlideApp.with(this)
         view.list_dialogs.layoutManager = GridLayoutManager(this,3,GridLayoutManager.HORIZONTAL,false)
-        view.list_dialogs.setHasFixedSize(true)
-        adapter = DialogsAdapter(glide) {
+        //view.list_dialogs.setHasFixedSize(true)
+        adapter = DialogsAdapter(glide, {
 
-        }
+        }, {
+
+        })
         view.list_dialogs.adapter = adapter
         viewModel = InjectorUtil.getStickersKeyboardViewModel(this)
         registerObservers()
@@ -70,12 +73,11 @@ class MemesKeyboardService : LifecycleKeyboardService() {
                 toVisibility(it == NetworkState.RUNNING)
             view.list_dialogs.visibility =
                 toVisibility(it == NetworkState.SUCCESS)
-            view.update_button.visibility =
-                toVisibility(it == NetworkState.SUCCESS)
             view.alert.visibility = toVisibility(it == NetworkState.FAILED)
         })
         viewModel.dialogs.observe(this, Observer {pagedList->
             pagedList?.let {
+                Log.i(TAG, "list size ${pagedList.size}")
                 adapter.submitList(it)
             }
         })
