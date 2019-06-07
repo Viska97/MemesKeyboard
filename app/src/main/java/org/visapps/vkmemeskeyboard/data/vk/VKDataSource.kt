@@ -62,7 +62,9 @@ class VKDataSource(private val vkService: VKService) {
                 }
                 "chat" -> {
                     name = item.conversation?.chatSettings?.title
-                    photo = item.conversation?.chatSettings?.photo?.photo_200
+                    photo = item.conversation?.chatSettings?.photo?.photo_200 ?:
+                            item.conversation?.chatSettings?.photo?.photo_100 ?:
+                            item.conversation?.chatSettings?.photo?.photo_50 ?: ""
                 }
             }
             if(listOf(peerId,lastMessageId,allowed,name,photo).any { it !=null }){
