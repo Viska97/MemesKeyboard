@@ -89,7 +89,6 @@ class VKRepository private constructor(private val dataSource : VKDataSource, pr
             .setInitialLoadSizeHint(pageSize)
             .setPrefetchDistance(prefetchDistance)
             .build()
-        Log.i(tag, "returning list")
         return database.dialogDao().getDialogs()
             .toLiveData(config = config, boundaryCallback = boundaryCallback)
     }

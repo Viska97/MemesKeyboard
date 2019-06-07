@@ -68,11 +68,11 @@ class VKDataSource(private val vkService: VKService) {
             if(listOf(peerId,lastMessageId,allowed,name,photo).any { it !=null }){
                 result.add(
                     Dialog(
-                        peerId!!,
-                        lastMessageId!!,
-                        name!!,
-                        allowed!!,
-                        photo!!
+                        peerId ?: -1,
+                        lastMessageId ?: -1,
+                        name ?: "",
+                        allowed ?: false,
+                        photo ?: ""
                     )
                 )
             }

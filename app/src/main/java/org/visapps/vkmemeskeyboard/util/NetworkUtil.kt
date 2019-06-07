@@ -6,6 +6,7 @@ suspend fun <T : Any> safeApiCall(call: suspend () -> Result<T>): Result<T> {
     return try {
         call()
     } catch (e: Exception) {
+        e.printStackTrace()
         Result.Error(IOException(e))
     }
 }
