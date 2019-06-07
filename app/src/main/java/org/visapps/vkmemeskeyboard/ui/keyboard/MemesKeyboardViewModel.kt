@@ -18,7 +18,7 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
         private const val TAG = "SKViewModel"
 
         private const val pageSize = 20
-        private const val prefetchDistance = 5;
+        private const val prefetchDistance = 10;
     }
 
     override val coroutineContext: CoroutineContext
@@ -53,10 +53,12 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
     }
     val networkState = MutableLiveData<NetworkState>()
     val refreshState = MutableLiveData<NetworkState>()
+    val initialLoadState = MutableLiveData<NetworkState>()
 
     init{
-        refreshState.postValue(NetworkState.SUCCESS)
+        initialLoadState.postValue(NetworkState.SUCCESS)
         networkState.postValue(NetworkState.SUCCESS)
+        refreshState.postValue(NetworkState.SUCCESS)
         keyboardState.addSource(isLoggedIn) {updateState(it)}
     }
 
@@ -90,16 +92,16 @@ class MemesKeyboardViewModel(private val backendRepository: BackendRepository, p
             return
         }
         dialogsLoadingJob = launch(coroutineContext) {
-            refreshState.postValue(NetworkState.RUNNING)
+            initialLoadState.postValue(NetworkState.RUNNING)
             val result = withContext(Dispatchers.IO) {
                 vkRepository.loadDialogs(pageSize)
             }
             when(result){
                 is Result.Success -> {
-                    refreshState.postValue(NetworkState.SUCCESS)
+                    initialLoadState.postValue(NetworkState.SUCCESS)
                 }
                 is Result.Error -> {
-                    refreshState.postValue(NetworkState.FAILED)
+                    initialLoadState.postValue(NetworkState.FAILED)
                 }
             }
         }

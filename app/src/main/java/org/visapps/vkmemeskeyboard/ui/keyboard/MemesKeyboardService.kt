@@ -36,19 +36,21 @@ class MemesKeyboardService : LifecycleKeyboardService() {
 
     override fun onCreateInputView(): View {
         view = layoutInflater.inflate(R.layout.keyboard_main,null)
+        viewModel = InjectorUtil.getStickersKeyboardViewModel(this)
         view.loginbutton.setOnClickListener {
             startActivity(intentFor<AuthActivity>().newTask())
         }
+        view.refresh_button.setOnClickListener {
+            viewModel.refreshDialogs()
+        }
         val glide = GlideApp.with(this)
         view.list_dialogs.layoutManager = GridLayoutManager(this,3,GridLayoutManager.HORIZONTAL,false)
-        //view.list_dialogs.setHasFixedSize(true)
         adapter = DialogsAdapter(glide, {
 
         }, {
-
+            viewModel.retryLoading()
         })
         view.list_dialogs.adapter = adapter
-        viewModel = InjectorUtil.getStickersKeyboardViewModel(this)
         registerObservers()
         return view
     }
@@ -65,10 +67,14 @@ class MemesKeyboardService : LifecycleKeyboardService() {
             view.dialogs.visibility =
                 switchVisibility(it == KeyboardState.DIALOGS)
         })
+        viewModel.refreshState.observe(this, Observer {
+            view.refresh_button.visibility = toVisibility(it == NetworkState.SUCCESS || it == NetworkState.FAILED)
+            view.refresh_progress.visibility = toVisibility(it == NetworkState.RUNNING)
+        })
         viewModel.networkState.observe(this, Observer<NetworkState> {
             adapter.setNetworkState(it)
         })
-        viewModel.refreshState.observe(this, Observer<NetworkState> {
+        viewModel.initialLoadState.observe(this, Observer<NetworkState> {
             view.progress.visibility =
                 toVisibility(it == NetworkState.RUNNING)
             view.list_dialogs.visibility =

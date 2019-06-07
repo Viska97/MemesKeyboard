@@ -3,6 +3,7 @@ package org.visapps.vkmemeskeyboard.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -16,8 +17,7 @@ class DialogNetworkStateViewHolder(
     private val reloadCallback: () -> Unit
 ) : RecyclerView.ViewHolder(view) {
     private val progressBar = view.findViewById<ProgressBar>(R.id.progress_bar)
-    private val reload = view.findViewById<MaterialButton>(R.id.reload_button)
-    private val errorMsg = view.findViewById<TextView>(R.id.error_msg)
+    private val reload = view.findViewById<ImageButton>(R.id.reload_button)
 
     init {
         reload.setOnClickListener {
@@ -29,8 +29,6 @@ class DialogNetworkStateViewHolder(
         progressBar.visibility =
             toVisibility(networkState == NetworkState.RUNNING)
         reload.visibility =
-            toVisibility(networkState == NetworkState.FAILED)
-        errorMsg.visibility =
             toVisibility(networkState == NetworkState.FAILED)
     }
 

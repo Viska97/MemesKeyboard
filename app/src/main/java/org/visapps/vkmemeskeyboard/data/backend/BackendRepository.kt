@@ -8,6 +8,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import kotlinx.coroutines.coroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.visapps.vkmemeskeyboard.BuildConfig
 import org.visapps.vkmemeskeyboard.data.database.AppDatabase
 import org.visapps.vkmemeskeyboard.data.models.Meme
 import org.visapps.vkmemeskeyboard.data.models.Pack
@@ -122,7 +123,7 @@ class BackendRepository(private val dataSource: BackendDataSource, private val d
 
     companion object {
 
-        private const val URL = "http://92.53.67.78/"
+        private val URL = BuildConfig.BACKEND_URL
 
         @Volatile
         private var instance: BackendRepository? = null
